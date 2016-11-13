@@ -244,18 +244,16 @@ OutputDefault4=0
 PageOptions4=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4
 OutputType5=Composite
 OutputName5=Composite Drawing
-OutputDocumentPath5=D:\My_Research\My_Design\Kit_UWBNode\Hardware\UWBNode v1.0\UWBNode_Pcb.PcbDoc
+OutputDocumentPath5=D:\My_Research\My_Design\Kit_UWBNode\Hardware\UWBNode v1.2\UWBNode_Pcb.PcbDoc
 OutputVariantName5=
 OutputDefault5=0
-PageOptions5=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=6.45|XCorrection=1.00|YCorrection=1.00|PrintKind=2|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=1|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
+PageOptions5=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=10.13|XCorrection=1.00|YCorrection=1.00|PrintKind=2|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=1|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A3|PaperIndex=8
 Configuration5_Name1=OutputConfigurationParameter1
 Configuration5_Item1=DesignatorDisplayMode=Physical|PrintArea=DesignExtent|PrintAreaLowerLeftCornerX=27900000|PrintAreaLowerLeftCornerY=21300000|PrintAreaUpperRightCornerX=44800000|PrintAreaUpperRightCornerY=37100000|Record=PcbPrintView
 Configuration5_Name2=OutputConfigurationParameter2
-Configuration5_Item2=IncludeBottomLayerComponents=True|IncludeMultiLayerComponents=True|IncludeTopLayerComponents=True|IncludeViewports=True|Index=0|Mirror=True|Name=Multilayer Composite Print|PadNumberFontSize=14|Record=PcbPrintOut|ShowHoles=True|ShowPadNets=False|ShowPadNumbers=False|SubstituteFonts=False
+Configuration5_Item2=IncludeBottomLayerComponents=True|IncludeMultiLayerComponents=True|IncludeTopLayerComponents=True|IncludeViewports=True|Index=0|Mirror=False|Name=Multilayer Composite Print|PadNumberFontSize=14|Record=PcbPrintOut|ShowHoles=True|ShowPadNets=False|ShowPadNumbers=False|SubstituteFonts=False
 Configuration5_Name3=OutputConfigurationParameter3
-Configuration5_Item3=CArc=Full|CFill=Full|Comment=Full|Coordinate=Full|CPad=Full|CRegion=Full|CText=Full|CTrack=Full|CVia=Full|Designator=Full|Dimension=Full|DLayer1=TopLayer|DLayer2=BottomLayer|FArc=Full|FFill=Full|FPad=Full|FRegion=Full|FText=Full|FTrack=Full|FVia=Full|Layer=BottomOverlay|Polygon=Full|PrintOutIndex=0|Record=PcbPrintLayer
-Configuration5_Name4=OutputConfigurationParameter4
-Configuration5_Item4=CArc=Full|CFill=Full|Comment=Full|Coordinate=Full|CPad=Full|CRegion=Full|CText=Full|CTrack=Full|CVia=Full|Designator=Full|Dimension=Full|DLayer1=TopLayer|DLayer2=BottomLayer|FArc=Full|FFill=Full|FPad=Full|FRegion=Full|FText=Full|FTrack=Full|FVia=Full|Layer=Mechanical1|Polygon=Full|PrintOutIndex=0|Record=PcbPrintLayer
+Configuration5_Item3=CArc=Full|CFill=Full|Comment=Full|Coordinate=Full|CPad=Full|CRegion=Full|CText=Full|CTrack=Full|CVia=Full|Designator=Full|Dimension=Full|DLayer1=TopLayer|DLayer2=BottomLayer|FArc=Full|FFill=Full|FPad=Full|FRegion=Full|FText=Full|FTrack=Full|FVia=Full|Layer=TopOverlay|Polygon=Full|PrintOutIndex=0|Record=PcbPrintLayer
 OutputType6=OpenBus Print
 OutputName6=OpenBus Prints
 OutputDocumentPath6=
@@ -288,7 +286,7 @@ OutputDefault10=0
 PageOptions10=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4
 OutputType11=Schematic Print
 OutputName11=Schematic Prints
-OutputDocumentPath11=D:\My_Research\My_Design\Kit_UWBNode\Hardware\UWBNode v1.0\UWBNode_Sch.SchDoc
+OutputDocumentPath11=D:\My_Research\My_Design\Kit_UWBNode\Hardware\UWBNode v1.2\UWBNode_Sch.SchDoc
 OutputVariantName11=
 OutputDefault11=0
 PageOptions11=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4
@@ -1033,34 +1031,40 @@ UpdateVariants=1
 PartTypes=0
 
 [NetInfos]
-Net1=NetName=USB_DP|NetColor=clOlive
-Net2=NetName=D_SCK|NetColor=$0000BE00
-Net3=NetName=D_EXT|NetColor=$0000BE00
-Net4=NetName=SWCLK|NetColor=$008E00C5
-Net5=NetName=ADC|NetColor=$006E6EFF
-Net6=NetName=LED_R|NetColor=clYellow
-Net7=NetName=M_CSB|NetColor=$00FF6E6E
-Net8=NetName=M_SCK|NetColor=$00FF6E6E
-Net9=NetName=M_INTB|NetColor=$00FF6E6E
-Net10=NetName=D_IRQ|NetColor=$0000BE00
-Net11=NetName=USB_VB|NetColor=clOlive
-Net12=NetName=USB_ID|NetColor=clOlive
-Net13=NetName=D_SDI|NetColor=$0000BE00
-Net14=NetName=LED_B|NetColor=clYellow
-Net15=NetName=D_SDO|NetColor=$0000BE00
-Net16=NetName=KEY|NetColor=$00FFFF6E
-Net17=NetName=U_RX|NetColor=$000083FD
-Net18=NetName=D_CSD|NetColor=$0000BE00
-Net19=NetName=LED_G|NetColor=clYellow
-Net20=NetName=M_SDO|NetColor=$00FF6E6E
-Net21=NetName=USB_DM|NetColor=clOlive
-Net22=NetName=D_RST|NetColor=$0000BE00
-Net23=NetName=SWDIO|NetColor=$008E00C5
-Net24=NetName=D_WAK|NetColor=$0000BE00
-Net25=NetName=M_INTM|NetColor=$00FF6E6E
-Net26=NetName=M_SDI|NetColor=$00FF6E6E
-Net27=NetName=U_TX|NetColor=$000083FD
-Net28=NetName=M_CSM|NetColor=$00FF6E6E
+Net1=NetName=PA15|NetColor=$00928E91
+Net2=NetName=USB_DP|NetColor=clOlive
+Net3=NetName=D_SCK|NetColor=$0000BE00
+Net4=NetName=PB3|NetColor=$00928E91
+Net5=NetName=PA2|NetColor=$00928E91
+Net6=NetName=D_EXT|NetColor=$0000BE00
+Net7=NetName=SWCLK|NetColor=$008E00C5
+Net8=NetName=PB4|NetColor=$00928E91
+Net9=NetName=ADC|NetColor=$006E6EFF
+Net10=NetName=LED_R|NetColor=clYellow
+Net11=NetName=M_CSB|NetColor=$00FF6E6E
+Net12=NetName=M_SCK|NetColor=$00FF6E6E
+Net13=NetName=M_INTB|NetColor=$00FF6E6E
+Net14=NetName=D_IRQ|NetColor=$0000BE00
+Net15=NetName=USB_VB|NetColor=clOlive
+Net16=NetName=USB_ID|NetColor=clOlive
+Net17=NetName=D_SDI|NetColor=$0000BE00
+Net18=NetName=PA3|NetColor=$00928E91
+Net19=NetName=LED_B|NetColor=clYellow
+Net20=NetName=D_SDO|NetColor=$0000BE00
+Net21=NetName=KEY|NetColor=$00FFFF6E
+Net22=NetName=U_RX|NetColor=$000083FD
+Net23=NetName=D_CSD|NetColor=$0000BE00
+Net24=NetName=LED_G|NetColor=clYellow
+Net25=NetName=M_SDO|NetColor=$00FF6E6E
+Net26=NetName=USB_DM|NetColor=clOlive
+Net27=NetName=D_RST|NetColor=$0000BE00
+Net28=NetName=PB5|NetColor=$00928E91
+Net29=NetName=SWDIO|NetColor=$008E00C5
+Net30=NetName=D_WAK|NetColor=$0000BE00
+Net31=NetName=M_INTM|NetColor=$00FF6E6E
+Net32=NetName=M_SDI|NetColor=$00FF6E6E
+Net33=NetName=U_TX|NetColor=$000083FD
+Net34=NetName=M_CSM|NetColor=$00FF6E6E
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=-1|Confirm=0|UseName=-1|InclAllRules=0
