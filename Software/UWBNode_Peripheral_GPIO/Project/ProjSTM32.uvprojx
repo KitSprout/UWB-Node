@@ -137,7 +137,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -455,14 +455,14 @@
               <FilePath>..\Program\main.c</FilePath>
             </File>
             <File>
-              <FileName>uwbNode_bsp.c</FileName>
+              <FileName>stm32f4xx_bsp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Program\uwbNode_bsp.c</FilePath>
+              <FilePath>..\Program\stm32f4xx_bsp.c</FilePath>
             </File>
             <File>
-              <FileName>uwbNode_it.c</FileName>
+              <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Program\uwbNode_it.c</FilePath>
+              <FilePath>..\Program\stm32f4xx_it.c</FilePath>
             </File>
           </Files>
         </Group>

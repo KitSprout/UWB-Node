@@ -6,16 +6,16 @@
   *  /_/|_|/_/ \__//___// .__//_/   \___/\_,_/ \__/  
   *                    /_/   github.com/KitSprout    
   * 
-  * @file    uwbNode_bsp.c
+  * @file    stm32f4xx_bsp.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    16-Nov-2016
   * @brief   
   * 
   */
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "drivers\stm32f4_system.h"
-#include "uwbNode_bsp.h"
+#include "stm32f4xx_bsp.h"
 
 /** @addtogroup STM32_Program
   * @{
@@ -28,7 +28,7 @@
 /* Private function prototypes -------------------------------------------------------------*/
 /* Private functions -----------------------------------------------------------------------*/
 
-void UWBN_GPIO_Config( void )
+void BSP_GPIO_Config( void )
 {
   GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -36,6 +36,7 @@ void UWBN_GPIO_Config( void )
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /* GPIO all analog input *****************************************************/
   GPIO_InitStruct.Mode  = GPIO_MODE_ANALOG;
@@ -43,6 +44,7 @@ void UWBN_GPIO_Config( void )
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
   GPIO_InitStruct.Pin   = GPIO_PIN_All & (~(GPIO_PIN_13 | GPIO_PIN_14));
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
