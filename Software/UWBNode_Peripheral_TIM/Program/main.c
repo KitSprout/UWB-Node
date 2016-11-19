@@ -8,14 +8,14 @@
   * 
   * @file    main.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "drivers\stm32f4_system.h"
-#include "uwbNode_bsp.h"
+#include "stm32f4xx_bsp.h"
 
 /** @addtogroup STM32_Program
   * @{
@@ -23,10 +23,6 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-#define TIMx_PRES       ((uint32_t)(SystemCoreClock / 10000)) // TIMCLK = 100MHz, 10kHz
-#define TIM2_PERIOD     ((uint32_t)(5000))    // 2 Hz
-#define TIM3_PERIOD     ((uint32_t)(10000))   // 1 Hz
-
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
 /* Private function prototypes -------------------------------------------------------------*/
@@ -42,13 +38,19 @@ void LED_G_BLINK( void )
   LED_G_Toggle();
 }
 
+void LED_R_BLINK( void )
+{
+  LED_R_Toggle();
+}
+
 int main( void )
 {
   HAL_Init();
 
-  UWBN_GPIO_Config();
-  UWBN_TIM2_Config(LED_B_BLINK, TIMx_PRES, TIM2_PERIOD);
-  UWBN_TIM3_Config(LED_G_BLINK, TIMx_PRES, TIM3_PERIOD);
+  BSP_GPIO_Config();
+  BSP_TIMER2_Config(LED_B_BLINK, 1);
+  BSP_TIMER3_Config(LED_G_BLINK, 2);
+  BSP_TIMER4_Config(LED_R_BLINK, 4);
 
   while (1) {
 

@@ -6,26 +6,22 @@
   *  /_/|_|/_/ \__//___// .__//_/   \___/\_,_/ \__/  
   *                    /_/   github.com/KitSprout    
   * 
-  * @file    uwbNode_it.c
+  * @file    stm32f4xx_it.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "drivers\stm32f4_system.h"
+#include "drivers\stm32f4_tim.h"
 
 /** @addtogroup STM32_Interrupt
   * @{
   */
 
 /* Private variables -----------------------------------------------------------------------*/
-extern TIM_HandleTypeDef Timer2Handle;
-extern TIM_HandleTypeDef Timer3Handle;
-extern pFunc IRQEven_TIM2;
-extern pFunc IRQEven_TIM3;
-
 /* Private functions -----------------------------------------------------------------------*/
 
 void NMI_Handler( void ) { while(1); }
@@ -57,6 +53,10 @@ void SysTick_Handler( void ) { HAL_IncTick(); }
 //void DMA1_Stream5_IRQHandler( void )
 //void DMA1_Stream6_IRQHandler( void )
 //void ADC_IRQHandler( void )
+//void CAN1_TX_IRQHandler( void )
+//void CAN1_RX0_IRQHandler( void )
+//void CAN1_RX1_IRQHandler( void )
+//void CAN1_SCE_IRQHandler( void )
 //void EXTI9_5_IRQHandler( void )
 //void TIM1_BRK_TIM9_IRQHandler( void )
 //void TIM1_UP_TIM10_IRQHandler( void )
@@ -64,23 +64,33 @@ void SysTick_Handler( void ) { HAL_IncTick(); }
 //void TIM1_CC_IRQHandler( void )
 void TIM2_IRQHandler( void )
 {
-  if (__HAL_TIM_GET_FLAG(&Timer2Handle, TIM_FLAG_UPDATE) != RESET) {
-    if (__HAL_TIM_GET_IT_SOURCE(&Timer2Handle, TIM_IT_UPDATE) != RESET) {
-      __HAL_TIM_CLEAR_IT(&Timer2Handle, TIM_IT_UPDATE);
-      IRQEven_TIM2();
+  if (__HAL_TIM_GET_FLAG(hTimer2.handle, TIM_FLAG_UPDATE) != RESET) {
+    if (__HAL_TIM_GET_IT_SOURCE(hTimer2.handle, TIM_IT_UPDATE) != RESET) {
+      __HAL_TIM_CLEAR_IT(hTimer2.handle, TIM_IT_UPDATE);
+      hTimer2.EvenCallback();
     }
   }
 }
+
 void TIM3_IRQHandler( void )
 {
-  if (__HAL_TIM_GET_FLAG(&Timer3Handle, TIM_FLAG_UPDATE) != RESET) {
-    if (__HAL_TIM_GET_IT_SOURCE(&Timer3Handle, TIM_IT_UPDATE) != RESET) {
-      __HAL_TIM_CLEAR_IT(&Timer3Handle, TIM_IT_UPDATE);
-      IRQEven_TIM3();
+  if (__HAL_TIM_GET_FLAG(hTimer3.handle, TIM_FLAG_UPDATE) != RESET) {
+    if (__HAL_TIM_GET_IT_SOURCE(hTimer3.handle, TIM_IT_UPDATE) != RESET) {
+      __HAL_TIM_CLEAR_IT(hTimer3.handle, TIM_IT_UPDATE);
+      hTimer3.EvenCallback();
     }
   }
 }
-//void TIM4_IRQHandler( void )
+
+void TIM4_IRQHandler( void )
+{
+  if (__HAL_TIM_GET_FLAG(hTimer4.handle, TIM_FLAG_UPDATE) != RESET) {
+    if (__HAL_TIM_GET_IT_SOURCE(hTimer4.handle, TIM_IT_UPDATE) != RESET) {
+      __HAL_TIM_CLEAR_IT(hTimer4.handle, TIM_IT_UPDATE);
+      hTimer4.EvenCallback();
+    }
+  }
+}
 //void I2C1_EV_IRQHandler( void )
 //void I2C1_ER_IRQHandler( void )
 //void I2C2_EV_IRQHandler( void )
@@ -89,18 +99,31 @@ void TIM3_IRQHandler( void )
 //void SPI2_IRQHandler( void )
 //void USART1_IRQHandler( void )
 //void USART2_IRQHandler( void )
+//void USART3_IRQHandler( void )
 //void EXTI15_10_IRQHandler( void )
 //void RTC_Alarm_IRQHandler( void )
 //void OTG_FS_WKUP_IRQHandler( void )
+//void TIM8_BRK_TIM12_IRQHandler( void )
+//void TIM8_UP_TIM13_IRQHandler( void )
+//void TIM8_TRG_COM_TIM14_IRQHandler( void )
+//void TIM8_CC_IRQHandler( void )
 //void DMA1_Stream7_IRQHandler( void )
 //void SDIO_IRQHandler( void )
 //void TIM5_IRQHandler( void )
 //void SPI3_IRQHandler( void )
+//void TIM6_IRQHandler( void )
+//void TIM7_IRQHandler( void )
 //void DMA2_Stream0_IRQHandler( void )
 //void DMA2_Stream1_IRQHandler( void )
 //void DMA2_Stream2_IRQHandler( void )
 //void DMA2_Stream3_IRQHandler( void )
 //void DMA2_Stream4_IRQHandler( void )
+//void DFSDM1_FLT0_IRQHandler( void )
+//void DFSDM1_FLT1_IRQHandler( void )
+//void CAN2_TX_IRQHandler( void )
+//void CAN2_RX0_IRQHandler( void )
+//void CAN2_RX1_IRQHandler( void )
+//void CAN2_SCE_IRQHandler( void )
 //void OTG_FS_IRQHandler( void )
 //void DMA2_Stream5_IRQHandler( void )
 //void DMA2_Stream6_IRQHandler( void )
@@ -108,8 +131,12 @@ void TIM3_IRQHandler( void )
 //void USART6_IRQHandler( void )
 //void I2C3_EV_IRQHandler( void )
 //void I2C3_ER_IRQHandler( void )
+//void RNG_IRQHandler( void )
 //void FPU_IRQHandler( void )
 //void SPI4_IRQHandler( void )
 //void SPI5_IRQHandler( void )
+//void QUADSPI_IRQHandler( void )
+//void FMPI2C1_EV_IRQHandler( void )
+//void FMPI2C1_ER_IRQHandler( void )
 
 /*************************************** END OF FILE ****************************************/
