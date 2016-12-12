@@ -8,7 +8,7 @@
   * 
   * @file    main.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
@@ -17,7 +17,7 @@
 #include "drivers\stm32f4_system.h"
 #include "modules\serial.h"
 #include "modules\imu.h"
-#include "uwbNode_bsp.h"
+#include "stm32f4xx_bsp.h"
 
 /** @addtogroup STM32_Program
   * @{
@@ -35,10 +35,9 @@ extern IMU_DataTypeDef IMU;
 int main( void )
 {
   HAL_Init();
-
-  UWBN_GPIO_Config();
-  UWBN_UART_Config(NULL);
-  UWBN_IMU_Config();
+  BSP_GPIO_Config();
+  BSP_UART_Config(NULL, NULL);
+  BSP_IMU_Config();
 
   while (1) {
     LED_B_Toggle();

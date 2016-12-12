@@ -6,9 +6,9 @@
   *  /_/|_|/_/ \__//___// .__//_/   \___/\_,_/ \__/  
   *                    /_/   github.com/KitSprout    
   * 
-  * @file    uwbNode_bsp.c
+  * @file    stm32f4xx_bsp.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    16-Nov-2016
   * @brief   
   * 
   */
@@ -17,7 +17,7 @@
 #include "drivers\stm32f4_system.h"
 #include "modules\serial.h"
 #include "modules\imu.h"
-#include "uwbNode_bsp.h"
+#include "stm32f4xx_bsp.h"
 
 /** @addtogroup STM32_Program
   * @{
@@ -27,14 +27,12 @@
 /* Private define --------------------------------------------------------------------------*/
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
-pFunc IRQEven_UART1 = NULL;
-
 extern IMU_DataTypeDef IMU;
 
 /* Private function prototypes -------------------------------------------------------------*/
 /* Private functions -----------------------------------------------------------------------*/
 
-void UWBN_GPIO_Config( void )
+void BSP_GPIO_Config( void )
 {
   GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -42,6 +40,7 @@ void UWBN_GPIO_Config( void )
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /* GPIO all analog input *****************************************************/
   GPIO_InitStruct.Mode  = GPIO_MODE_ANALOG;
@@ -49,6 +48,7 @@ void UWBN_GPIO_Config( void )
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
   GPIO_InitStruct.Pin   = GPIO_PIN_All & (~(GPIO_PIN_13 | GPIO_PIN_14));
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -78,16 +78,15 @@ void UWBN_GPIO_Config( void )
   LED_B_Set();
 }
 
-void UWBN_UART_Config( pFunc pUARTx )
+void BSP_UART_Config( pFunc txEven, pFunc rxEven )
 {
-  uint8_t interrupt = (pUARTx == NULL) ? DISABLE : ENABLE;
-  IRQEven_UART1 = pUARTx;
-
-  Serial_Config(interrupt);
+  hSerial.RxCallback = txEven;
+  hSerial.RxCallback = rxEven;
+  Serial_Config();
   printf("\r\nHello World!\r\n\r\n");
 }
 
-void UWBN_IMU_Config( void )
+void BSP_IMU_Config( void )
 {
   IMU_InitTypeDef IMU_InitStruct;
 

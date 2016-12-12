@@ -6,24 +6,22 @@
   *  /_/|_|/_/ \__//___// .__//_/   \___/\_,_/ \__/  
   *                    /_/   github.com/KitSprout    
   * 
-  * @file    uwbNode_it.c
+  * @file    stm32f4xx_it.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "drivers\stm32f4_system.h"
+#include "modules\serial.h"
 
 /** @addtogroup STM32_Interrupt
   * @{
   */
 
 /* Private variables -----------------------------------------------------------------------*/
-extern UART_HandleTypeDef SerialHandle;
-extern pFunc IRQEven_UART1;
-
 /* Private functions -----------------------------------------------------------------------*/
 
 void NMI_Handler( void ) { while(1); }
@@ -71,10 +69,20 @@ void SysTick_Handler( void ) { HAL_IncTick(); }
 //void SPI2_IRQHandler( void )
 void USART1_IRQHandler( void )
 {
-  if (__HAL_UART_GET_IT_SOURCE(&SerialHandle, UART_IT_RXNE) != RESET) {
-    IRQEven_UART1();
+#if defined(KS_HW_UART_HAL_LIBRARY)
+  HAL_UART_IRQHandler(hSerial.handle);
+
+#else
+  if (__HAL_UART_GET_IT_SOURCE(hSerial.handle, UART_IT_TXE) != RESET) {
+    __HAL_UART_GET_IT_SOURCE(hSerial.handle, UART_IT_TXE);
+    HAL_UART_TxCpltCallback(hSerial.handle);
   }
-  __HAL_UART_GET_IT_SOURCE(&SerialHandle, UART_IT_RXNE);
+  if (__HAL_UART_GET_IT_SOURCE(hSerial.handle, UART_IT_RXNE) != RESET) {
+    __HAL_UART_GET_IT_SOURCE(hSerial.handle, UART_IT_RXNE);
+    HAL_UART_RxCpltCallback(hSerial.handle);
+  }
+
+#endif
 }
 //void USART2_IRQHandler( void )
 //void EXTI15_10_IRQHandler( void )

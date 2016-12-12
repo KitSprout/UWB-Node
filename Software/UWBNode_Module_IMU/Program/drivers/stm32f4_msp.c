@@ -8,13 +8,14 @@
   * 
   * @file    stm32f4_msp.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "stm32f4xx.h"
+#include "boardConfig.h"
 
 /** @addtogroup STM32_Driver
   * @{
@@ -22,15 +23,12 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-#define USE_CLOCK_SOUCE_HSE
-//#define USE_CLOCK_SOUCE_HSI
-
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
 /* Private function prototypes -------------------------------------------------------------*/
 /* Private functions -----------------------------------------------------------------------*/
 
-#if defined(USE_CLOCK_SOUCE_HSE)
+#if defined(KS_HW_CLOCK_SOUCE_HSE)
 /*
 System Clock source            = PLL (HSE)
 SYSCLK(Hz)                     = 100000000
@@ -78,7 +76,8 @@ void HAL_MspInit( void )
     while(1) { ; }
 }
 
-#elif defined(USE_CLOCK_SOUCE_HSI)
+
+#elif defined(KS_HW_CLOCK_SOUCE_HSI)
 /*
 System Clock source            = PLL (HSI)
 SYSCLK(Hz)                     = 100000000
