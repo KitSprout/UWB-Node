@@ -29,25 +29,22 @@
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
 extern SPI_HandleTypeDef HSPI_IMU;
-static uint8_t writeBuf[IMU_MAX_TXBUF];
-static uint8_t readBuf[IMU_MAX_RXBUF];
+extern uint8_t IMU_TX_BUFFER[IMU_MAX_TXBUF];
+extern uint8_t IMU_RX_BUFFER[IMU_MAX_RXBUF];
 
 /* Private function prototypes -------------------------------------------------------------*/
 /* Private functions -----------------------------------------------------------------------*/
 
 /**
   * @brief  MPU92_WriteReg
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @retval None
   */
 void MPU92_WriteReg( uint8_t writeAddr, uint8_t writeData )
 {
-//  writeBuf[0] = writeAddr;
-//  writeBuf[1] = writeData;
+//  IMU_TX_BUFFER[0] = writeAddr;
+//  IMU_TX_BUFFER[1] = writeData;
 
   IMU_CSM_L();
-//  SPI_SendRecv(&HSPI_IMU, writeBuf, readBuf, 3, HAL_MAX_DELAY);
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, 3, HAL_MAX_DELAY);
   SPI_RW(&HSPI_IMU, writeAddr);
   SPI_RW(&HSPI_IMU, writeData);
   IMU_CSM_H();
@@ -55,22 +52,18 @@ void MPU92_WriteReg( uint8_t writeAddr, uint8_t writeData )
 
 /**
   * @brief  MPU92_WriteRegs
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 {
 //  uint8_t count = lens;
-//  uint8_t *ptr = &writeBuf[1];
+//  uint8_t *ptr = &IMU_TX_BUFFER[1];
 
-//  writeBuf[0] = writeAddr;
+//  IMU_TX_BUFFER[0] = writeAddr;
 //  while(count--) {
 //    *ptr++ = *writeData++;
 //  }
 //  IMU_CSM_L();
-//  SPI_SendRecv(&HSPI_IMU, writeBuf, readBuf, lens + 1, HAL_MAX_DELAY);
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, lens + 1, HAL_MAX_DELAY);
 //  IMU_CSM_H();
 
   IMU_CSM_L();
@@ -83,43 +76,37 @@ void MPU92_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 
 /**
   * @brief  MPU92_ReadReg
-  * @param  readAddr: 
-  * @retval read data
   */
 uint8_t MPU92_ReadReg( uint8_t readAddr )
 {
-  writeBuf[0] = 0x80 | readAddr;
-  writeBuf[1] = 0x00;
+  IMU_TX_BUFFER[0] = 0x80 | readAddr;
+  IMU_TX_BUFFER[1] = 0x00;
 
   IMU_CSM_L();
-  SPI_SendRecv(&HSPI_IMU, writeBuf, readBuf, 2, HAL_MAX_DELAY);
+  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, 2, HAL_MAX_DELAY);
   IMU_CSM_H();
 
-  return readBuf[1];
+  return IMU_RX_BUFFER[1];
 }
 
 /**
   * @brief  MPU92_ReadRegs
-  * @param  readAddr: 
-  * @param  readData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 {
   uint8_t count = lens;
-  uint8_t *ptrBuf = &writeBuf[1];
+  uint8_t *ptrBuf = &IMU_TX_BUFFER[1];
 
-  writeBuf[0] = 0x80 | readAddr;
+  IMU_TX_BUFFER[0] = 0x80 | readAddr;
   while (count--) {
     *ptrBuf++ = 0;
   }
 
   IMU_CSM_L();
-  SPI_SendRecv(&HSPI_IMU, writeBuf, readBuf, lens + 1, HAL_MAX_DELAY);
+  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, lens + 1, HAL_MAX_DELAY);
   IMU_CSM_H();
 
-  ptrBuf = &readBuf[1];
+  ptrBuf = &IMU_RX_BUFFER[1];
   while (lens--) {
     *readData++ = *ptrBuf++;
   }
@@ -128,9 +115,6 @@ void MPU92_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 #if defined(__USE_MAGNETOMETER)
 /**
   * @brief  MPU92_Mag_WriteReg
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @retval None
   */
 void MPU92_Mag_WriteReg( uint8_t writeAddr, uint8_t writeData )
 {
@@ -154,10 +138,6 @@ void MPU92_Mag_WriteReg( uint8_t writeAddr, uint8_t writeData )
 
 /**
   * @brief  MPU92_Mag_WriteRegs
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 {
@@ -182,8 +162,6 @@ void MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 
 /**
   * @brief  MPU92_Mag_ReadReg
-  * @param  readAddr: 
-  * @retval read data
   */
 uint8_t MPU92_Mag_ReadReg( uint8_t readAddr )
 {
@@ -210,10 +188,6 @@ uint8_t MPU92_Mag_ReadReg( uint8_t readAddr )
 
 /**
   * @brief  MPU92_Mag_ReadRegs
-  * @param  readAddr: 
-  * @param  readData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_Mag_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 {
@@ -240,8 +214,6 @@ void MPU92_Mag_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 
 /**
   * @brief  MPU92_Config
-  * @param  IMUx: 
-  * @retval None
   */
 void MPU92_Config( void )
 {
@@ -260,8 +232,6 @@ void MPU92_Config( void )
 
 /**
   * @brief  MPU92_Init
-  * @param  IMUx: 
-  * @retval state 
   */
 #define MPU6500_InitRegNum  11
 #define AK8963_InitRegNum   5

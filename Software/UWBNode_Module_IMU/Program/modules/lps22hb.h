@@ -126,7 +126,7 @@ void     LPS22_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens );
 uint8_t  LPS22_ReadReg( uint8_t readAddr );
 void     LPS22_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens );
 
-uint32_t LPS22_Config( void );
+void     LPS22_Config( void );
 int8_t   LPS22_Init( LPS_ConfigTypeDef *LPSx );
 int8_t   LPS22_DeviceCheck( void );
 void     LPS22_GetSensitivity( float32_t *sensitivity );

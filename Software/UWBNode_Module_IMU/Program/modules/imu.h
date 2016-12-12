@@ -25,7 +25,7 @@
 #include "stm32f4xx.h"
 #include "algorithms\mathUnit.h"
 #include "modules\mpu9250.h"
-//#include "modules\lps22hb.h"
+#include "modules\lps22hb.h"
 
 /* Exported types --------------------------------------------------------------------------*/
 

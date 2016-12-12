@@ -509,6 +509,11 @@
               <FileType>1</FileType>
               <FilePath>..\Program\modules\mpu9250.c</FilePath>
             </File>
+            <File>
+              <FileName>lps22hb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Program\modules\lps22hb.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

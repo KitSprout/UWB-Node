@@ -28,20 +28,18 @@
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
 /* Private macro ---------------------------------------------------------------------------*/
-//#define IMU_Delay(__TIME)   delay_ms(__TIME);
-
 /* Private variables -----------------------------------------------------------------------*/
 extern SPI_HandleTypeDef HSPI_IMU;
 
-static uint8_t TX_BUFFER[IMU_MAX_TXBUF] = {0};
-static uint8_t RX_BUFFER[IMU_MAX_RXBUF] = {0};
+uint8_t IMU_TX_BUFFER[IMU_MAX_TXBUF] = {0};
+uint8_t IMU_RX_BUFFER[IMU_MAX_RXBUF] = {0};
 
 ImuHandle_st imu_spi = {
   .handle    = &HSPI_IMU,
   .txBufLens = IMU_MAX_TXBUF,
   .rxBufLens = IMU_MAX_RXBUF,
-  .pTxBuf    = TX_BUFFER,
-  .pRxBuf    = RX_BUFFER,
+  .pTxBuf    = IMU_TX_BUFFER,
+  .pRxBuf    = IMU_RX_BUFFER,
 };
 
 IMU_DataTypeDef IMU;
@@ -56,8 +54,6 @@ static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux );
 
 /**
   * @brief  IMU_Config
-  * @param  None
-  * @retval None
   */
 void IMU_Config( void )
 {
@@ -89,8 +85,6 @@ void IMU_Config( void )
 
 /**
   * @brief  IMU_Init
-  * @param  IMUx: 
-  * @retval state
   */
 int8_t IMU_Init( IMU_InitTypeDef *IMUx )
 {
@@ -123,8 +117,6 @@ int8_t IMU_Init( IMU_InitTypeDef *IMUx )
 
 /**
   * @brief  IMU_GetRawData
-  * @param  imux: 
-  * @retval status
   */
 int8_t IMU_GetRawData( IMU_DataTypeDef *imux )
 {
@@ -165,8 +157,6 @@ int8_t IMU_GetRawData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_GetCalibData
-  * @param  imux: 
-  * @retval None
   */
 void IMU_GetCalibData( IMU_DataTypeDef *imux )
 {
@@ -204,8 +194,6 @@ void IMU_GetCalibData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_GetScaleData
-  * @param  pIMU: 
-  * @retval None
   */
 void IMU_GetScaleData( IMU_DataTypeDef *imux )
 {
@@ -233,8 +221,6 @@ void IMU_GetScaleData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_InitData
-  * @param  imu: 
-  * @retval None
   */
 static void IMU_InitData( IMU_DataTypeDef *imux )
 {
@@ -293,8 +279,6 @@ static void IMU_InitData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_SetSensitivity
-  * @param  IMUx: 
-  * @retval None
   */
 static void IMU_SetSensitivity( IMU_InitTypeDef *IMUx )
 {
@@ -336,8 +320,6 @@ static void IMU_SetSensitivity( IMU_InitTypeDef *IMUx )
 
 /**
   * @brief  IMU_MergeScaleStrength
-  * @param  pIMU: 
-  * @retval None
   */
 static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux )
 {
@@ -354,8 +336,6 @@ static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_MergeScaleCalib
-  * @param  pIMU: 
-  * @retval None
   */
 //static void IMU_MergeScaleCalib( IMU_DataTypeDef *imux )
 //{
@@ -389,8 +369,6 @@ static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_PrintData
-  * @param  pIMU: 
-  * @retval None
   */
 void IMU_PrintData( IMU_DataTypeDef *imux )
 {
