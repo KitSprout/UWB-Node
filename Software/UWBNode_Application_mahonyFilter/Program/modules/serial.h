@@ -8,7 +8,7 @@
   * 
   * @file    serial.h
   * @author  KitSprout
-  * @date    6-Oct-2016
+  * @date    16-Nov-2016
   * @brief   
   * 
   */
@@ -22,22 +22,33 @@
 #endif
 
 /* Includes --------------------------------------------------------------------------------*/
-#include <stdio.h>
+#include "drivers\stm32f4_system.h"
+#include "drivers\stm32f4_uart.h"
 #include "algorithms\string.h"
 
 /* Exported types --------------------------------------------------------------------------*/
+typedef struct {
+  UART_HandleTypeDef *handle;
+  uint16_t txBufLens;
+  uint16_t rxBufLens;
+  uint8_t *pTxBuf;
+  uint8_t *pRxBuf;
+} __attribute__((aligned)) SerialHandle_st;
+
 /* Exported constants ----------------------------------------------------------------------*/
-/* Exported functions ----------------------------------------------------------------------*/  
-void    Serial_Config( uint8_t interrupt );
-void    Serial_SendByte( uint8_t sendByte );
-void    Serial_SendData( uint8_t *sendData, uint16_t lens );
-void    Serial_SendStr( char *pWord );
-void    Serial_SendNum( StringType_t type, uint8_t lens, int32_t number );
-uint8_t Serial_RecvByte( void );
-void    Serial_RecvData( uint8_t *recvData, uint16_t lens );
-int8_t  Serial_RecvDataWTO( uint8_t *recvData, uint16_t lens, int32_t timeoutMs );
-void    Serial_RecvStr( char *pWord );
-int8_t  Serial_RecvStrWTO( char *pWord, int32_t timeoutMs );
+/* Exported functions ----------------------------------------------------------------------*/
+void    Serial_Config( void );
+void    Serial_SetTxCallbackFunc( pFunc callback );
+void    Serial_SetRxCallbackFunc( pFunc callback );
+
+int8_t  Serial_SendData( uint8_t *sendData, uint16_t lens, uint32_t timuout );
+int8_t  Serial_RecvData( uint8_t *recvData, uint16_t lens, uint32_t timeout );
+int8_t  Serial_SendDataIT( uint8_t *sendData, uint16_t lens);
+int8_t  Serial_RecvDataIT( uint8_t *recvData, uint16_t lens );
+int8_t  Serial_SendDataDMA( uint8_t *sendData, uint16_t lens );
+int8_t  Serial_RecvDataDMA( uint8_t *recvData, uint16_t lens );
+
+extern SerialHandle_st hSerial;
 
 #ifdef __cplusplus
 }

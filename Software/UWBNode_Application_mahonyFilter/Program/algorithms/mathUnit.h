@@ -8,7 +8,7 @@
   * 
   * @file    mathUnit.h
   * @author  KitSprout
-  * @date    6-Oct-2016
+  * @date    16-Nov-2016
   * @brief   
   * 
   */
@@ -22,24 +22,24 @@
 #endif
 
 /* Includes --------------------------------------------------------------------------------*/
-#include "stm32f4xx.h"
+#include "core_cm4.h"
 #include "arm_math.h"
 
 /* Exported types --------------------------------------------------------------------------*/
 
 /** 
-  * @brief   euler angle structure definition  
+  * @brief  euler angle structure definition
   */ 
 typedef struct {
   float32_t pitch;
   float32_t roll;
   float32_t yaw;
-} __attribute__((aligned(4))) EulerAngle_t;
+} __attribute__((aligned(4))) eulerAngle_t;
 
 /* Exported constants ----------------------------------------------------------------------*/
 /* Exported macro --------------------------------------------------------------------------*/
-#define invSqrtf( iSq )   (1.0f / sqrtf((float32_t)(iSq)))
-#define squa( Sq )        (((float32_t)Sq) * ((float32_t)(Sq)))
+#define invSqrtf( _iSq )  (1.0f / sqrtf((float32_t)(_iSq)))
+#define squa( _Sq )       (((float32_t)_Sq) * ((float32_t)(_Sq)))
 #define toRad( _mathD )   ((_mathD) * 0.0174532925f)
 #define toDeg( _mathR )   ((_mathR) * 57.2957795f)
 

@@ -32,22 +32,22 @@ typedef struct {
   float32_t q2;
   float32_t q3;
   float32_t rMat[3][3];
-} __attribute__((aligned(4))) Quaternion_t;
+} __attribute__((aligned(4))) quaternion_t;
 
 /* Exported constants ----------------------------------------------------------------------*/
 /* Exported functions ----------------------------------------------------------------------*/  
-void Quaternion_Clear( Quaternion_t *pNumQ );
-void Quaternion_ToNumQ( Quaternion_t *pNumQ, const EulerAngle_t *pAngE );
-void Quaternion_ToAngE( EulerAngle_t *pAngE, const Quaternion_t *pNumQ );
-void Quaternion_UpdateRotMatrix( Quaternion_t *pNumQ );
-void Quaternion_Add( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const Quaternion_t *pNumB );
-void Quaternion_Sub( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const Quaternion_t *pNumB );
-void Quaternion_Multiply( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const Quaternion_t *pNumB );
-void Quaternion_MultiplyVector( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const float32_t *pVect );
-void Quaternion_Conjugate( Quaternion_t *pNumQ, const Quaternion_t *pNumC );
-void Quaternion_Normalize( Quaternion_t *pNumQ, const Quaternion_t *pNumN );
-void Quaternion_NormalizeFast( Quaternion_t *pNumQ, const Quaternion_t *pNumN );
-void Quaternion_RungeKutta( Quaternion_t *pNumQ, const float32_t *gyro, const float32_t helfTime );
+void Quaternion_Clear( quaternion_t *pNumQ );
+void Quaternion_ToNumQ( quaternion_t *pNumQ, const eulerAngle_t *pAngE );
+void Quaternion_ToAngE( eulerAngle_t *pAngE, const quaternion_t *pNumQ );
+void Quaternion_UpdateRotMatrix( quaternion_t *pNumQ );
+void Quaternion_Add( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB );
+void Quaternion_Sub( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB );
+void Quaternion_Multiply( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB );
+void Quaternion_MultiplyVector( quaternion_t *pNumQ, const quaternion_t *pNumA, const float32_t *pVect );
+void Quaternion_Conjugate( quaternion_t *pNumQ, const quaternion_t *pNumC );
+void Quaternion_Normalize( quaternion_t *pNumQ, const quaternion_t *pNumN );
+void Quaternion_NormalizeFast( quaternion_t *pNumQ, const quaternion_t *pNumN );
+void Quaternion_RungeKutta( quaternion_t *pNumQ, const float32_t *gyro, const float32_t helfTime );
 
 #ifdef __cplusplus
 }

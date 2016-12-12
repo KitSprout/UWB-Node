@@ -8,7 +8,7 @@
   * 
   * @file    kSerial.c
   * @author  KitSprout
-  * @date    12-Nov-2016
+  * @date    28-Nov-2016
   * @brief   
   * 
   */
@@ -27,7 +27,7 @@
 
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
-static ptrSerial pSerialFunc = NULL;
+static ptrSerial pSerialSend = NULL;
 
 static uint16_t sequenceNum = 0;
 static uint8_t packet[SERIAL_PACKET_MAX_SIZE] = {0};
@@ -61,7 +61,7 @@ static const uint16_t typeTable[10][2] = {
   */
 void kSerial_config( ptrSerial pSerial )
 {
-  pSerialFunc = pSerial;
+  pSerialSend = pSerial;
 
   packet[0] = 'K';  /* header 'K' */
   packet[1] = 'S';  /* header 'S' */
@@ -72,9 +72,9 @@ void kSerial_config( ptrSerial pSerial )
   * @param  data: point to send data
   * @param  lens: data lengths
   * @param  type: data type
-  * @retval None
+  * @retval status of send
   */
-void kSerial_sendData( void *data, const uint8_t lens, const uint8_t type )
+int8_t kSerial_sendData( void *data, const uint8_t lens, const uint8_t type )
 {
   const uint16_t dataBytes  = lens << typeTable[type][1];
   const uint16_t packetInfo = typeTable[type][0] | dataBytes;
@@ -94,9 +94,7 @@ void kSerial_sendData( void *data, const uint8_t lens, const uint8_t type )
   packet[packetSize - 2] = '\r';                        /* end 'r'     */
   packet[packetSize - 1] = '\n';                        /* end 'n'     */
 
-  do {
-    pSerialFunc(*pPacket++);
-  } while (--packetSize);
+  return pSerialSend(pPacket, packetSize, HAL_MAX_DELAY);
 }
 
 /*************************************** END OF FILE ****************************************/

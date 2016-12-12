@@ -38,12 +38,12 @@ typedef enum {
   KS_FLOAT64
 } KSerial_TypeIndex;
 
-typedef void (*ptrSerial)(uint8_t);
+typedef int8_t (*ptrSerial)(uint8_t*, uint16_t, uint32_t);
 
 /* Exported constants ----------------------------------------------------------------------*/
 /* Exported functions ----------------------------------------------------------------------*/  
-void kSerial_config( ptrSerial pSerial );
-void kSerial_sendData( void *data, const uint8_t lens, const uint8_t type );
+void    kSerial_config( ptrSerial pSerial );
+int8_t  kSerial_sendData( void *data, const uint8_t lens, const uint8_t type );
 
 #ifdef __cplusplus
 }

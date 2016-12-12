@@ -8,7 +8,7 @@
   * 
   * @file    imu.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    12-Dec-2016
   * @brief   
   * 
   */
@@ -27,26 +27,20 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-#define IMU_SPIx                SPI2
-#define IMU_SPIx_CLK_ENABLE()   __HAL_RCC_SPI2_CLK_ENABLE()
-#define IMU_SPIx_SPEED_HIGH     SPI_BAUDRATEPRESCALER_2
-#define IMU_SPIx_SPEED_LOW      SPI_BAUDRATEPRESCALER_256
-
-#define IMU_SCK_PIN             GPIO_PIN_13
-#define IMU_SCK_GPIO_PORT       GPIOB
-#define IMU_SCK_AF              GPIO_AF5_SPI2
-
-#define IMU_SDO_PIN             GPIO_PIN_14
-#define IMU_SDO_GPIO_PORT       GPIOB
-#define IMU_SDO_AF              GPIO_AF5_SPI2
-
-#define IMU_SDI_PIN             GPIO_PIN_15
-#define IMU_SDI_GPIO_PORT       GPIOB
-#define IMU_SDI_AF              GPIO_AF5_SPI2
-
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
-static SPI_HandleTypeDef IMU_HandleStruct;
+extern SPI_HandleTypeDef HSPI_IMU;
+
+uint8_t IMU_TX_BUFFER[IMU_MAX_TXBUF] = {0};
+uint8_t IMU_RX_BUFFER[IMU_MAX_RXBUF] = {0};
+
+ImuHandle_st imu_spi = {
+  .handle    = &HSPI_IMU,
+  .txBufLens = IMU_MAX_TXBUF,
+  .rxBufLens = IMU_MAX_RXBUF,
+  .pTxBuf    = IMU_TX_BUFFER,
+  .pRxBuf    = IMU_RX_BUFFER,
+};
 
 IMU_DataTypeDef IMU;
 
@@ -59,27 +53,10 @@ static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux );
 /* Private functions -----------------------------------------------------------------------*/
 
 /**
-  * @brief  IMU_SetSpeed
-  * @param  speedSel: 
-  * @retval None
-  */
-static void IMU_SetSpeed( uint8_t speedSel )
-{
-  __HAL_SPI_DISABLE(&IMU_HandleStruct);
-  IMU_HandleStruct.Init.BaudRatePrescaler = speedSel;
-  HAL_SPI_Init(&IMU_HandleStruct);
-  __HAL_SPI_ENABLE(&IMU_HandleStruct);
-}
-
-/**
   * @brief  IMU_Config
-  * @param  None
-  * @retval None
   */
 void IMU_Config( void )
 {
-  GPIO_InitTypeDef GPIO_InitStruct;
-
 #if defined(__MPU92)
   MPU92_Config();
 #endif
@@ -88,48 +65,26 @@ void IMU_Config( void )
   LPS22_Config();
 #endif
 
-  /* SPI Clk ******************************************************************/
-  IMU_SPIx_CLK_ENABLE();
-
-  /* SPI Pin ******************************************************************/
-  GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull      = GPIO_PULLUP;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
-
-  GPIO_InitStruct.Pin       = IMU_SCK_PIN;
-  GPIO_InitStruct.Alternate = IMU_SCK_AF;
-  HAL_GPIO_Init(IMU_SCK_GPIO_PORT, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin       = IMU_SDO_PIN;
-  GPIO_InitStruct.Alternate = IMU_SCK_AF;
-  HAL_GPIO_Init(IMU_SDO_GPIO_PORT, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin       = IMU_SDI_PIN;
-  GPIO_InitStruct.Alternate = IMU_SCK_AF;
-  HAL_GPIO_Init(IMU_SDI_GPIO_PORT, &GPIO_InitStruct);
-
   /* SPI Init ****************************************************************/
-  IMU_HandleStruct.Instance               = IMU_SPIx;
-  IMU_HandleStruct.Init.Mode              = SPI_MODE_MASTER;
-  IMU_HandleStruct.Init.Direction         = SPI_DIRECTION_2LINES;
-  IMU_HandleStruct.Init.DataSize          = SPI_DATASIZE_8BIT;
-  IMU_HandleStruct.Init.CLKPolarity       = SPI_POLARITY_HIGH;
-  IMU_HandleStruct.Init.CLKPhase          = SPI_PHASE_2EDGE;
-  IMU_HandleStruct.Init.NSS               = SPI_NSS_SOFT;
-  IMU_HandleStruct.Init.BaudRatePrescaler = IMU_SPIx_SPEED_LOW;
-  IMU_HandleStruct.Init.FirstBit          = SPI_FIRSTBIT_MSB;
-  IMU_HandleStruct.Init.TIMode            = SPI_TIMODE_DISABLE;
-  IMU_HandleStruct.Init.CRCCalculation    = SPI_CRCCALCULATION_ENABLE;
-  IMU_HandleStruct.Init.CRCPolynomial     = 7;
-  HAL_SPI_Init(&IMU_HandleStruct);
+  imu_spi.handle->Instance               = IMU_SPIx;
+  imu_spi.handle->Init.Mode              = SPI_MODE_MASTER;
+  imu_spi.handle->Init.Direction         = SPI_DIRECTION_2LINES;
+  imu_spi.handle->Init.DataSize          = SPI_DATASIZE_8BIT;
+  imu_spi.handle->Init.CLKPolarity       = SPI_POLARITY_HIGH;
+  imu_spi.handle->Init.CLKPhase          = SPI_PHASE_2EDGE;
+  imu_spi.handle->Init.NSS               = SPI_NSS_SOFT;
+  imu_spi.handle->Init.BaudRatePrescaler = IMU_SPIx_SPEED_LOW;
+  imu_spi.handle->Init.FirstBit          = SPI_FIRSTBIT_MSB;
+  imu_spi.handle->Init.TIMode            = SPI_TIMODE_DISABLE;
+  imu_spi.handle->Init.CRCCalculation    = SPI_CRCCALCULATION_ENABLE;
+  imu_spi.handle->Init.CRCPolynomial     = 7;
+  HAL_SPI_Init(imu_spi.handle);
 
-  __HAL_SPI_ENABLE(&IMU_HandleStruct);
+  __HAL_SPI_ENABLE(imu_spi.handle);
 }
 
 /**
   * @brief  IMU_Init
-  * @param  IMUx: 
-  * @retval state
   */
 int8_t IMU_Init( IMU_InitTypeDef *IMUx )
 {
@@ -149,7 +104,7 @@ int8_t IMU_Init( IMU_InitTypeDef *IMUx )
   }
 #endif
 
-  IMU_SetSpeed(IMU_SPIx_SPEED_HIGH);
+  SPI_SetSpeed(imu_spi.handle, IMU_SPIx_SPEED_HIGH);
   delay_ms(10);
 
   IMU_InitData(IMUx->Data);
@@ -162,8 +117,6 @@ int8_t IMU_Init( IMU_InitTypeDef *IMUx )
 
 /**
   * @brief  IMU_GetRawData
-  * @param  imux: 
-  * @retval status
   */
 int8_t IMU_GetRawData( IMU_DataTypeDef *imux )
 {
@@ -204,12 +157,12 @@ int8_t IMU_GetRawData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_GetCalibData
-  * @param  imux: 
-  * @retval None
   */
 void IMU_GetCalibData( IMU_DataTypeDef *imux )
 {
+#if defined(__USE_MAGNETOMETER)
   float32_t tmp[3] = {0};
+#endif
 
   IMU_GetRawData(imux);
 
@@ -241,8 +194,6 @@ void IMU_GetCalibData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_GetScaleData
-  * @param  pIMU: 
-  * @retval None
   */
 void IMU_GetScaleData( IMU_DataTypeDef *imux )
 {
@@ -270,8 +221,6 @@ void IMU_GetScaleData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_InitData
-  * @param  imu: 
-  * @retval None
   */
 static void IMU_InitData( IMU_DataTypeDef *imux )
 {
@@ -330,8 +279,6 @@ static void IMU_InitData( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_SetSensitivity
-  * @param  IMUx: 
-  * @retval None
   */
 static void IMU_SetSensitivity( IMU_InitTypeDef *IMUx )
 {
@@ -373,8 +320,6 @@ static void IMU_SetSensitivity( IMU_InitTypeDef *IMUx )
 
 /**
   * @brief  IMU_MergeScaleStrength
-  * @param  pIMU: 
-  * @retval None
   */
 static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux )
 {
@@ -391,8 +336,6 @@ static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_MergeScaleCalib
-  * @param  pIMU: 
-  * @retval None
   */
 //static void IMU_MergeScaleCalib( IMU_DataTypeDef *imux )
 //{
@@ -426,8 +369,6 @@ static void IMU_MergeScaleStrength( IMU_DataTypeDef *imux )
 
 /**
   * @brief  IMU_PrintData
-  * @param  pIMU: 
-  * @retval None
   */
 void IMU_PrintData( IMU_DataTypeDef *imux )
 {

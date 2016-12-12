@@ -8,18 +8,19 @@
   * 
   * @file    main.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "drivers\stm32f4_system.h"
+#include "drivers\stm32f4_tim.h"
 #include "modules\serial.h"
 #include "modules\kSerial.h"
 #include "modules\imu.h"
 #include "algorithms\mahonyFilter.h"
-#include "uwbNode_bsp.h"
+#include "stm32f4xx_bsp.h"
 
 /** @addtogroup STM32_Program
   * @{
@@ -27,103 +28,65 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-
-#define __SAMPLE_RATE_FREQ1KHz_
-
-#ifdef __SAMPLE_RATE_FREQ100Hz_
-  #define SAMPLE_RATE_FREQ  ((uint16_t)100)       // 100Hz
-  #define SAMPLE_RATE       ((float32_t)0.01f)    // 10ms
-#endif
-
-#ifdef __SAMPLE_RATE_FREQ200Hz_
-  #define SAMPLE_RATE_FREQ  ((uint16_t)200)       // 200Hz
-  #define SAMPLE_RATE       ((float32_t)0.005f)   // 5ms
-#endif
-
-#ifdef __SAMPLE_RATE_FREQ400Hz_
-  #define SAMPLE_RATE_FREQ  ((uint16_t)400)       // 400Hz
-  #define SAMPLE_RATE       ((float32_t)0.0025f)  // 2.5ms
-#endif
-
-#ifdef __SAMPLE_RATE_FREQ500Hz_
-  #define SAMPLE_RATE_FREQ  ((uint16_t)500)       // 500Hz
-  #define SAMPLE_RATE       ((float32_t)0.002f)   // 2.0ms
-#endif
-
-#ifdef __SAMPLE_RATE_FREQ1KHz_
-  #define SAMPLE_RATE_FREQ  ((uint16_t)1000)      // 1KHz
-  #define SAMPLE_RATE       ((float32_t)0.001f)   // 1.0ms
-#endif
+#define PACKET_DATALENS 19
 
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
 extern IMU_DataTypeDef IMU;
 
 MahonyFilter_t mf;
-
+static float32_t sendBuf[PACKET_DATALENS] = {0};
 struct {
   float32_t msec;
   float32_t sec;
   float32_t min;
 } time;
 
+__IO int8_t flag = HAL_ERROR;
+
 /* Private function prototypes -------------------------------------------------------------*/
-void IMU_EvenCallBack( void );
+void TIMER_CallBack( void );
 
 /* Private functions -----------------------------------------------------------------------*/
 
-#define PACKET_LENS 19
 int main( void )
 {
   HAL_Init();
-
-  UWBN_GPIO_Config();
-  UWBN_UART_Config(NULL);
-  UWBN_IMU_Config(IMU_EvenCallBack, SAMPLE_RATE_FREQ);
-
+  BSP_GPIO_Config();
+  BSP_TIMER2_Config(TIMER_CallBack, SAMPLE_RATE_FREQ);
+  BSP_UART_Config(NULL, NULL);
+  BSP_IMU_Config();
   MahonyFilter_Init(&mf, &IMU, SAMPLE_RATE);
+
   time.msec = 0.0f;
   time.sec  = 0.0f;
   time.min  = 0.0f;
 
+  Timer2_Cmd(ENABLE);
   while (1) {
-    LED_G_Toggle();
-
-#if 0
-    printf("GX:%.4f\tGY:%.4f\tGZ:%.4f\tAX:%.4f\tAY:%.4f\tAZ:%.4f\tMX:%.3f\tMY:%.3f\tMZ:%.3f\r\n",
-      mf.angE.pitch,  mf.angE.roll,   mf.angE.yaw,
-//      IMU.gyrData[0], IMU.gyrData[1], IMU.gyrData[2],
-      IMU.accData[0], IMU.accData[1], IMU.accData[2],
-      IMU.magData[0], IMU.magData[1], IMU.magData[2]
-    );
-    delay_ms(100);
-
-#else
-    float32_t sendBuf[PACKET_LENS] = {0};
-
-    sendBuf[0]  = IMU.gyrData[0];
-    sendBuf[1]  = IMU.gyrData[1];
-    sendBuf[2]  = IMU.gyrData[2];
-    sendBuf[3]  = IMU.accData[0];
-    sendBuf[4]  = IMU.accData[1];
-    sendBuf[5]  = IMU.accData[2];
-    sendBuf[6]  = IMU.magData[0];
-    sendBuf[7]  = IMU.magData[1];
-    sendBuf[8]  = IMU.magData[2];
-    sendBuf[9]  = mf.angE.pitch;
-    sendBuf[10] = mf.angE.roll;
-    sendBuf[11] = mf.angE.yaw;
-    sendBuf[12] = mf.numQ.q0;
-    sendBuf[13] = mf.numQ.q1;
-    sendBuf[14] = mf.numQ.q2;
-    sendBuf[15] = mf.numQ.q3;
-    sendBuf[16] = time.min;
-    sendBuf[17] = time.sec;
-    sendBuf[18] = time.msec;
-    kSerial_sendData(sendBuf, PACKET_LENS, KS_FLOAT32);
-
-#endif
-
+    if (flag == HAL_OK) {
+      flag = HAL_ERROR;
+      sendBuf[0]  = time.min;
+      sendBuf[1]  = time.sec;
+      sendBuf[2]  = time.msec;
+      sendBuf[3]  = IMU.gyrData[0];
+      sendBuf[4]  = IMU.gyrData[1];
+      sendBuf[5]  = IMU.gyrData[2];
+      sendBuf[6]  = IMU.accData[0];
+      sendBuf[7]  = IMU.accData[1];
+      sendBuf[8]  = IMU.accData[2];
+      sendBuf[9]  = IMU.magData[0];
+      sendBuf[10] = IMU.magData[1];
+      sendBuf[11] = IMU.magData[2];
+      sendBuf[12] = mf.angE.pitch;
+      sendBuf[13] = mf.angE.roll;
+      sendBuf[14] = mf.angE.yaw;
+      sendBuf[15] = mf.numQ.q0;
+      sendBuf[16] = mf.numQ.q1;
+      sendBuf[17] = mf.numQ.q2;
+      sendBuf[18] = mf.numQ.q3;
+      kSerial_sendData(sendBuf, PACKET_DATALENS, KS_FLOAT32);
+    }
   }
 }
 
@@ -160,23 +123,30 @@ void GyroBiasCorrection( float32_t *gyro )
   gyro[2] -= gyroBias[2];
 }
 
-void IMU_EvenCallBack( void )
+void TIMER_CallBack( void )
 {
   LED_R_Set();
 
   time.msec += SAMPLE_RATE;
-  if (time.msec >= 1.0f) {
-    time.msec = 0.0f;
-    time.sec += 1.0f;
-    if (time.sec >= 60.0f) {
-      time.sec = 0.0f;
+  if (time.msec < 1.0f) {
+    
+  }
+  else {
+    time.msec -= 1.0f;
+    time.sec  += 1.0f;
+    if (time.sec < 60.0f) {
+
+    }
+    else {
+      time.sec -= 60.0f;
       time.min += 1.0f;
     }
   }
 
-  IMU_GetScaleData(mf.imu);
+  IMU_GetScaleData(&IMU);
   GyroBiasCorrection(IMU.gyrData);
   MahonyFilter_Update(&mf);
+  flag = HAL_OK;
 
   LED_R_Reset();
 }

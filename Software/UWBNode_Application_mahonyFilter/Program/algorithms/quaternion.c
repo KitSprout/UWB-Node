@@ -35,7 +35,7 @@
   * @param  pNumQ: 
   * @retval None
   */
-void Quaternion_Clear( Quaternion_t *pNumQ )
+void Quaternion_Clear( quaternion_t *pNumQ )
 {
   pNumQ->q0 = 1.0f;
   pNumQ->q1 = 0.0f;
@@ -55,7 +55,7 @@ void Quaternion_Clear( Quaternion_t *pNumQ )
   * @param  pAngE: 
   * @retval None
   */
-__INLINE void Quaternion_ToNumQ( Quaternion_t *pNumQ, const EulerAngle_t *pAngE )
+__INLINE void Quaternion_ToNumQ( quaternion_t *pNumQ, const eulerAngle_t *pAngE )
 {
   const float32_t halfP = toRad(pAngE->pitch * 0.5f);
   const float32_t halfR = toRad(pAngE->roll  * 0.5f);
@@ -91,7 +91,7 @@ __INLINE void Quaternion_ToNumQ( Quaternion_t *pNumQ, const EulerAngle_t *pAngE 
   * @param  pAngE: 
   * @retval None
   */
-__INLINE void Quaternion_ToAngE( EulerAngle_t *pAngE, const Quaternion_t *pNumQ )
+__INLINE void Quaternion_ToAngE( eulerAngle_t *pAngE, const quaternion_t *pNumQ )
 {
   pAngE->pitch = toDeg(-asinf(pNumQ->rMat[0][2]));
   pAngE->roll  = toDeg(atan2f(pNumQ->rMat[1][2], pNumQ->rMat[2][2]));
@@ -103,7 +103,7 @@ __INLINE void Quaternion_ToAngE( EulerAngle_t *pAngE, const Quaternion_t *pNumQ 
   * @param  pNumQ: 
   * @retval None
   */
-__INLINE void Quaternion_UpdateRotMatrix( Quaternion_t *pNumQ )
+__INLINE void Quaternion_UpdateRotMatrix( quaternion_t *pNumQ )
 {
   const float32_t Mq0q0 = pNumQ->q0 * pNumQ->q0;
   const float32_t Mq1q1 = pNumQ->q1 * pNumQ->q1;
@@ -134,7 +134,7 @@ __INLINE void Quaternion_UpdateRotMatrix( Quaternion_t *pNumQ )
   * @param  pNumB: 
   * @retval None
   */
-__INLINE void Quaternion_Add( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const Quaternion_t *pNumB )
+__INLINE void Quaternion_Add( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB )
 {
   pNumQ->q0 = pNumA->q0 + pNumB->q0;
   pNumQ->q1 = pNumA->q1 + pNumB->q1;
@@ -149,7 +149,7 @@ __INLINE void Quaternion_Add( Quaternion_t *pNumQ, const Quaternion_t *pNumA, co
   * @param  pNumB: 
   * @retval None
   */
-__INLINE void Quaternion_Sub( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const Quaternion_t *pNumB )
+__INLINE void Quaternion_Sub( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB )
 {
   pNumQ->q0 = pNumA->q0 - pNumB->q0;
   pNumQ->q1 = pNumA->q1 - pNumB->q1;
@@ -164,10 +164,10 @@ __INLINE void Quaternion_Sub( Quaternion_t *pNumQ, const Quaternion_t *pNumA, co
   * @param  pNumB: 
   * @retval None
   */
-__INLINE void Quaternion_Multiply( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const Quaternion_t *pNumB )
+__INLINE void Quaternion_Multiply( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB )
 {
   if (pNumQ == pNumA) {
-    Quaternion_t tmpQ;
+    quaternion_t tmpQ;
     tmpQ.q0 = pNumA->q0;
     tmpQ.q1 = pNumA->q1;
     tmpQ.q2 = pNumA->q2;
@@ -192,10 +192,10 @@ __INLINE void Quaternion_Multiply( Quaternion_t *pNumQ, const Quaternion_t *pNum
   * @param  pVect: 
   * @retval None
   */
-__INLINE void Quaternion_MultiplyVector( Quaternion_t *pNumQ, const Quaternion_t *pNumA, const float32_t *pVect )
+__INLINE void Quaternion_MultiplyVector( quaternion_t *pNumQ, const quaternion_t *pNumA, const float32_t *pVect )
 {
   if (pNumQ == pNumA) {
-    Quaternion_t tmpQ;
+    quaternion_t tmpQ;
     tmpQ.q0 = pNumA->q0;
     tmpQ.q1 = pNumA->q1;
     tmpQ.q2 = pNumA->q2;
@@ -219,7 +219,7 @@ __INLINE void Quaternion_MultiplyVector( Quaternion_t *pNumQ, const Quaternion_t
   * @param  pNumC: 
   * @retval None
   */
-__INLINE void Quaternion_Conjugate( Quaternion_t *pNumQ, const Quaternion_t *pNumC )
+__INLINE void Quaternion_Conjugate( quaternion_t *pNumQ, const quaternion_t *pNumC )
 {
   pNumQ->q0 =  pNumC->q0;
   pNumQ->q1 = -pNumC->q1;
@@ -233,7 +233,7 @@ __INLINE void Quaternion_Conjugate( Quaternion_t *pNumQ, const Quaternion_t *pNu
   * @param  pNumN: 
   * @retval None
   */
-__INLINE void Quaternion_Normalize( Quaternion_t *pNumQ, const Quaternion_t *pNumN )
+__INLINE void Quaternion_Normalize( quaternion_t *pNumQ, const quaternion_t *pNumN )
 {
   const float32_t norm = invSqrtf(squa(pNumQ->q0) + squa(pNumQ->q1) + squa(pNumQ->q2) + squa(pNumQ->q3));
 
@@ -249,7 +249,7 @@ __INLINE void Quaternion_Normalize( Quaternion_t *pNumQ, const Quaternion_t *pNu
   * @param  pNumN: 
   * @retval None
   */
-__INLINE void Quaternion_NormalizeFast( Quaternion_t *pNumQ, const Quaternion_t *pNumN )
+__INLINE void Quaternion_NormalizeFast( quaternion_t *pNumQ, const quaternion_t *pNumN )
 {
   const float32_t sqrtNumber = squa(pNumQ->q0) + squa(pNumQ->q1) + squa(pNumQ->q2) + squa(pNumQ->q3);
 
@@ -274,7 +274,7 @@ __INLINE void Quaternion_NormalizeFast( Quaternion_t *pNumQ, const Quaternion_t 
   * @param  helfTime: 
   * @retval None
   */
-__INLINE void Quaternion_RungeKutta( Quaternion_t *pNumQ, const float32_t *gyro, const float32_t helfTime )
+__INLINE void Quaternion_RungeKutta( quaternion_t *pNumQ, const float32_t *gyro, const float32_t helfTime )
 {
   float32_t q[4];
   float32_t gyr[3];

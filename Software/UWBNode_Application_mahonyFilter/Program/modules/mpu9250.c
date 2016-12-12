@@ -8,7 +8,7 @@
   * 
   * @file    mpu9250.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    12-Dec-2016
   * @brief   
   * 
   */
@@ -24,97 +24,109 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-#define MPU92_SPIx                SPI2
-#define MPU92_SPIx_CLK_ENABLE()   __HAL_RCC_SPI2_CLK_ENABLE()
-
-#define MPU92_CSM_PIN             GPIO_PIN_12
-#define MPU92_CSM_GPIO_PORT       GPIOB
-#define MPU92_CSM_H()             __GPIO_SET(MPU92_CSM_GPIO_PORT, MPU92_CSM_PIN)
-#define MPU92_CSM_L()             __GPIO_RST(MPU92_CSM_GPIO_PORT, MPU92_CSM_PIN)
-
-#define MPU92_INTM_PIN            GPIO_Pin_0
-#define MPU92_INTM_GPIO_PORT      GPIOB
-
-#define MPU92_Delay(__TIME)       delay_ms(__TIME);
-
-#define __USE_MAG_AK8963
 #define MAG_READ_DELAY 256
 
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
+extern SPI_HandleTypeDef HSPI_IMU;
+extern uint8_t IMU_TX_BUFFER[IMU_MAX_TXBUF];
+extern uint8_t IMU_RX_BUFFER[IMU_MAX_RXBUF];
+
 /* Private function prototypes -------------------------------------------------------------*/
 /* Private functions -----------------------------------------------------------------------*/
 
 /**
   * @brief  MPU92_WriteReg
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @retval None
   */
 void MPU92_WriteReg( uint8_t writeAddr, uint8_t writeData )
 {
-  MPU92_CSM_L();
-  SPI_RW(MPU92_SPIx, writeAddr);
-  SPI_RW(MPU92_SPIx, writeData);
-  MPU92_CSM_H();
+//  IMU_TX_BUFFER[0] = writeAddr;
+//  IMU_TX_BUFFER[1] = writeData;
+
+  IMU_CSM_L();
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, 3, HAL_MAX_DELAY);
+  SPI_RW(&HSPI_IMU, writeAddr);
+  SPI_RW(&HSPI_IMU, writeData);
+  IMU_CSM_H();
 }
 
 /**
   * @brief  MPU92_WriteRegs
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 {
-  MPU92_CSM_L();
-  SPI_RW(MPU92_SPIx, writeAddr);
+//  uint8_t count = lens;
+//  uint8_t *ptr = &IMU_TX_BUFFER[1];
+
+//  IMU_TX_BUFFER[0] = writeAddr;
+//  while(count--) {
+//    *ptr++ = *writeData++;
+//  }
+//  IMU_CSM_L();
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, lens + 1, HAL_MAX_DELAY);
+//  IMU_CSM_H();
+
+  IMU_CSM_L();
+  SPI_RW(&HSPI_IMU, writeAddr);
   for (uint8_t i = 0; i < lens; i++) {
-    SPI_RW(MPU92_SPIx, writeData[i]);
+    SPI_RW(&HSPI_IMU, writeData[i]);
   }
-  MPU92_CSM_H();
+  IMU_CSM_H();
 }
 
 /**
   * @brief  MPU92_ReadReg
-  * @param  readAddr: 
-  * @retval read data
   */
 uint8_t MPU92_ReadReg( uint8_t readAddr )
 {
-  uint8_t readData = 0;
+//  IMU_TX_BUFFER[0] = 0x80 | readAddr;
+//  IMU_TX_BUFFER[1] = 0x00;
 
-  MPU92_CSM_L();
-  SPI_RW(MPU92_SPIx, 0x80 | readAddr);
-  readData = SPI_RW(MPU92_SPIx, 0x00);
-  MPU92_CSM_H();
+//  IMU_CSM_L();
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, 2, HAL_MAX_DELAY);
+//  IMU_CSM_H();
 
-  return readData;
+  IMU_CSM_L();
+  SPI_RW(&HSPI_IMU, 0x80 | readAddr);
+  IMU_RX_BUFFER[1] = SPI_RW(&HSPI_IMU, 0x00);
+  IMU_CSM_H();
+
+  return IMU_RX_BUFFER[1];
 }
 
 /**
   * @brief  MPU92_ReadRegs
-  * @param  readAddr: 
-  * @param  readData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 {
-  MPU92_CSM_L();
-  SPI_RW(MPU92_SPIx, 0x80 | readAddr);
+//  uint8_t count = lens;
+//  uint8_t *ptrBuf = &IMU_TX_BUFFER[1];
+
+//  IMU_TX_BUFFER[0] = 0x80 | readAddr;
+//  while (count--) {
+//    *ptrBuf++ = 0;
+//  }
+
+//  IMU_CSM_L();
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, lens + 1, HAL_MAX_DELAY);
+//  IMU_CSM_H();
+
+//  ptrBuf = &IMU_RX_BUFFER[1];
+//  while (lens--) {
+//    *readData++ = *ptrBuf++;
+//  }
+
+  IMU_CSM_L();
+  SPI_RW(&HSPI_IMU, 0x80 | readAddr);
   for (uint8_t i = 0; i < lens; i++) {
-    readData[i] = SPI_RW(MPU92_SPIx, 0x00);
+    readData[i] = SPI_RW(&HSPI_IMU, 0x00);
   }
-  MPU92_CSM_H();
+  IMU_CSM_H();
 }
 
+#if defined(__USE_MAGNETOMETER)
 /**
   * @brief  MPU92_Mag_WriteReg
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @retval None
   */
 void MPU92_Mag_WriteReg( uint8_t writeAddr, uint8_t writeData )
 {
@@ -122,26 +134,22 @@ void MPU92_Mag_WriteReg( uint8_t writeAddr, uint8_t writeData )
   uint32_t timeout = MAG_READ_DELAY;
 
   MPU92_WriteReg(MPU6500_I2C_SLV4_ADDR, AK8963_I2C_ADDR);
-  MPU92_Delay(1);
+  delay_ms(1);
   MPU92_WriteReg(MPU6500_I2C_SLV4_REG, writeAddr);
-  MPU92_Delay(1);
+  delay_ms(1);
   MPU92_WriteReg(MPU6500_I2C_SLV4_DO, writeData);
-  MPU92_Delay(1);
+  delay_ms(1);
   MPU92_WriteReg(MPU6500_I2C_SLV4_CTRL, MPU6500_I2C_SLVx_EN);
-  MPU92_Delay(1);
+  delay_ms(1);
 
   do {
     status = MPU92_ReadReg(MPU6500_I2C_MST_STATUS);
-    MPU92_Delay(1);
+    delay_ms(1);
   } while (((status & MPU6500_I2C_SLV4_DONE) == 0) && (timeout--));
 }
 
 /**
   * @brief  MPU92_Mag_WriteRegs
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 {
@@ -149,14 +157,14 @@ void MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
   uint32_t timeout = MAG_READ_DELAY;
 
   MPU92_WriteReg(MPU6500_I2C_SLV4_ADDR, AK8963_I2C_ADDR);
-  MPU92_Delay(1);
+  delay_ms(1);
   for (uint8_t i = 0; i < lens; i++) {
     MPU92_WriteReg(MPU6500_I2C_SLV4_REG, writeAddr + i);
-    MPU92_Delay(1);
+    delay_ms(1);
     MPU92_WriteReg(MPU6500_I2C_SLV4_DO, writeData[i]);
-    MPU92_Delay(1);
+    delay_ms(1);
     MPU92_WriteReg(MPU6500_I2C_SLV4_CTRL, MPU6500_I2C_SLVx_EN);
-    MPU92_Delay(1);
+    delay_ms(1);
 
     do {
       status = MPU92_ReadReg(MPU6500_I2C_MST_STATUS);
@@ -166,8 +174,6 @@ void MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 
 /**
   * @brief  MPU92_Mag_ReadReg
-  * @param  readAddr: 
-  * @retval read data
   */
 uint8_t MPU92_Mag_ReadReg( uint8_t readAddr )
 {
@@ -176,15 +182,15 @@ uint8_t MPU92_Mag_ReadReg( uint8_t readAddr )
   uint32_t timeout = MAG_READ_DELAY;
 
   MPU92_WriteReg(MPU6500_I2C_SLV4_ADDR, AK8963_I2C_ADDR | 0x80);
-  MPU92_Delay(1);
+  delay_ms(1);
   MPU92_WriteReg(MPU6500_I2C_SLV4_REG, readAddr);
-  MPU92_Delay(1);
+  delay_ms(1);
   MPU92_WriteReg(MPU6500_I2C_SLV4_CTRL, MPU6500_I2C_SLVx_EN);
-  MPU92_Delay(1);
+  delay_ms(1);
 
   do {
     status = MPU92_ReadReg(MPU6500_I2C_MST_STATUS);
-    MPU92_Delay(1);
+    delay_ms(1);
   } while (((status & MPU6500_I2C_SLV4_DONE) == 0) && (timeout--));
 
   readData = MPU92_ReadReg(MPU6500_I2C_SLV4_DI);
@@ -194,10 +200,6 @@ uint8_t MPU92_Mag_ReadReg( uint8_t readAddr )
 
 /**
   * @brief  MPU92_Mag_ReadRegs
-  * @param  readAddr: 
-  * @param  readData: 
-  * @param  lens: 
-  * @retval None
   */
 void MPU92_Mag_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 {
@@ -205,51 +207,43 @@ void MPU92_Mag_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
   uint32_t timeout = MAG_READ_DELAY;
 
   MPU92_WriteReg(MPU6500_I2C_SLV4_ADDR, AK8963_I2C_ADDR | 0x80);
-  MPU92_Delay(1);
+  delay_ms(1);
   for (uint8_t i = 0; i< lens; i++) {
     MPU92_WriteReg(MPU6500_I2C_SLV4_REG, readAddr + i);
-    MPU92_Delay(1);
+    delay_ms(1);
     MPU92_WriteReg(MPU6500_I2C_SLV4_CTRL, MPU6500_I2C_SLVx_EN);
-    MPU92_Delay(1);
+    delay_ms(1);
 
     do {
       status = MPU92_ReadReg(MPU6500_I2C_MST_STATUS);
     } while (((status & MPU6500_I2C_SLV4_DONE) == 0) && (timeout--));
 
     readData[i] = MPU92_ReadReg(MPU6500_I2C_SLV4_DI);
-    MPU92_Delay(1);
+    delay_ms(1);
   }
 }
+#endif
 
 /**
   * @brief  MPU92_Config
-  * @param  IMUx: 
-  * @retval SPIx_BASE
   */
-uint32_t MPU92_Config( void )
+void MPU92_Config( void )
 {
   GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* SPI Clk ******************************************************************/
-  MPU92_SPIx_CLK_ENABLE();
 
   /* SPI Pin ******************************************************************/
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull  = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 
-  GPIO_InitStruct.Pin   = MPU92_CSM_PIN;
-  HAL_GPIO_Init(MPU92_CSM_GPIO_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin   = IMU_CSM_PIN;
+  HAL_GPIO_Init(IMU_CSM_GPIO_PORT, &GPIO_InitStruct);
 
-  MPU92_CSM_H();    // LOW ENABLE
-
-  return ((uint32_t)MPU92_SPIx);
+  IMU_CSM_H();    // LOW ENABLE
 }
 
 /**
   * @brief  MPU92_Init
-  * @param  IMUx: 
-  * @retval state 
   */
 #define MPU6500_InitRegNum  11
 #define AK8963_InitRegNum   5
@@ -269,6 +263,7 @@ int8_t MPU92_Init( MPU_ConfigTypeDef *MPUx )
     {0x00, MPU6500_ACCEL_CONFIG_2}, /* [9]  default : AccLPS_460Hz        */
     {0x30, MPU6500_USER_CTRL},      /* [10] Set I2C_MST_EN, I2C_IF_DIS    */
   };
+#if defined(__USE_MAGNETOMETER)
   uint8_t AK8963_InitData[AK8963_InitRegNum][2] = {
     {0x01, AK8963_CNTL2},           /* [0]  Reset Device                  */
     {0x00, AK8963_CNTL1},           /* [1]  Power-down mode               */
@@ -277,36 +272,36 @@ int8_t MPU92_Init( MPU_ConfigTypeDef *MPUx )
     {0x00, AK8963_CNTL1},           /* [3]  Power-down mode               */
     {0x06, AK8963_CNTL1},           /* [4]  Continuous measurement mode 2 */
   };
-
+#endif
   MPU6500_InitData[6][0] = MPUx->MPU_Gyr_FullScale;       /* [6] MPU6500_GYRO_CONFIG */
   MPU6500_InitData[7][0] = MPUx->MPU_Acc_FullScale;       /* [7] MPU6500_ACCEL_CONFIG */
   MPU6500_InitData[8][0] = MPUx->MPU_Gyr_LowPassFilter;   /* [8] MPU6500_CONFIG */
   MPU6500_InitData[9][0] = MPUx->MPU_Acc_LowPassFilter;   /* [9] MPU6500_ACCEL_CONFIG_2 */
 
   for (uint32_t i = 0; i < MPU6500_InitRegNum; i++) {
-    MPU92_Delay(2);
+    delay_ms(2);
     MPU92_WriteReg(MPU6500_InitData[i][1], MPU6500_InitData[i][0]);
   }
 
-  MPU92_Delay(2);
+  delay_ms(2);
   status = MPU92_DeviceCheck();
   if (status != SUCCESS)
     return ERROR;
 
-#if defined(__USE_MAG_AK8963)
+#if defined(__USE_MAGNETOMETER)
   AK8963_InitData[4][0] |= MPUx->MPU_Mag_FullScale;        /* [4] AK8963_CNTL1 */
 
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_Mag_WriteReg(AK8963_InitData[0][1], AK8963_InitData[0][0]);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_Mag_WriteReg(AK8963_InitData[1][1], AK8963_InitData[1][0]);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_Mag_WriteReg(AK8963_InitData[2][1], AK8963_InitData[2][0]);
 #if 0   /* ASA read */
   uint8_t ASA[3] = {0};
   float32_t sensAdj[3] = {0};
 
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_Mag_ReadRegs(AK8963_ASAX, ASA, 3);
   for (uint8_t i = 0; i < 3; i++) {
     sensAdj[i] = (ASA[i] + 128) / 256.0;
@@ -314,27 +309,27 @@ int8_t MPU92_Init( MPU_ConfigTypeDef *MPUx )
 //  printf("ASA = %i, %i, %i\r\n", ASA[0], ASA[1], ASA[2]);
 //  printf("sensAdj = %f, %f, %f\r\n", sensAdj[0], sensAdj[1], sensAdj[2]);
 #endif
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_Mag_WriteReg(AK8963_InitData[3][1], AK8963_InitData[3][0]);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_Mag_WriteReg(AK8963_InitData[4][1], AK8963_InitData[4][0]);
 
   /* config mpu9250 i2c */
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_WriteReg(MPU6500_I2C_MST_CTRL, 0x5D);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_WriteReg(MPU6500_I2C_SLV0_ADDR, AK8963_I2C_ADDR | 0x80);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_WriteReg(MPU6500_I2C_SLV0_REG, AK8963_ST1);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_WriteReg(MPU6500_I2C_SLV0_CTRL, MPU6500_I2C_SLVx_EN | 8);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_WriteReg(MPU6500_I2C_SLV4_CTRL, 0x09);
-  MPU92_Delay(2);
+  delay_ms(2);
   MPU92_WriteReg(MPU6500_I2C_MST_DELAY_CTRL, 0x81);
 #endif
 
-  MPU92_Delay(100);
+  delay_ms(100);
 
   return SUCCESS;
 }
@@ -348,8 +343,8 @@ int8_t MPU92_DeviceCheck( void )
     return ERROR;
   }
 
-#if defined(__USE_MAG_AK8963)
-  MPU92_Delay(10);
+#if defined(__USE_MAGNETOMETER)
+  delay_ms(10);
   deviceID = MPU92_Mag_ReadReg(AK8963_WIA);
   if (deviceID != AK8963_DeviceID) {
     return ERROR;
@@ -426,7 +421,7 @@ void MPU92_GetSensitivity( MPU_ConfigTypeDef *MPUx, float32_t *sensitivity )
   */
 int8_t MPU92_GetRawData( int16_t *data )
 {
-#if defined(__USE_MAG_AK8963)
+#if defined(__USE_MAGNETOMETER)
   uint8_t readBuf[22] = {0};
   MPU92_ReadRegs(MPU6500_ACCEL_XOUT_H, readBuf, 22);    /* Read Gyr, Acc, Mag */
 #else
@@ -442,7 +437,7 @@ int8_t MPU92_GetRawData( int16_t *data )
   data[5] = (int16_t)(readBuf[4]  << 8) | readBuf[5];   /* Acc.Z */
   data[6] = (int16_t)(readBuf[6]  << 8) | readBuf[7];   /* ICTemp */
 
-#if defined(__USE_MAG_AK8963)
+#if defined(__USE_MAGNETOMETER)
   if (!(!(readBuf[14] & AK8963_STATUS_DRDY) || (readBuf[14] & AK8963_STATUS_DOR) || (readBuf[21] & AK8963_STATUS_HOFL))) {
     data[7] = (int16_t)(readBuf[16] << 8) | readBuf[15];  /* Mag.X */
     data[8] = (int16_t)(readBuf[18] << 8) | readBuf[17];  /* Mag.Y */

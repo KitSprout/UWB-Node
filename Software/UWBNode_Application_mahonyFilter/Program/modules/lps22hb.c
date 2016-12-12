@@ -8,7 +8,7 @@
   * 
   * @file    lps22hb.c
   * @author  KitSprout
-  * @date    13-Nov-2016
+  * @date    12-Dec-2016
   * @brief   
   * 
   */
@@ -24,118 +24,112 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-#define LPS22_SPIx                SPI2
-#define LPS22_SPIx_CLK_ENABLE()   __HAL_RCC_SPI2_CLK_ENABLE()
-
-#define LPS22_CSB_PIN             GPIO_PIN_8
-#define LPS22_CSB_GPIO_PORT       GPIOA
-#define LPS22_CSB_H()             __GPIO_SET(LPS22_CSB_GPIO_PORT, LPS22_CSB_PIN)
-#define LPS22_CSB_L()             __GPIO_RST(LPS22_CSB_GPIO_PORT, LPS22_CSB_PIN)
-
-#define LPS22_INTB_PIN            GPIO_Pin_10
-#define LPS22_INTB_GPIO_PORT      GPIOB
-
-#define LPS22_Delay(__TIME)       delay_ms(__TIME);
-
 /* Private macro ---------------------------------------------------------------------------*/
 /* Private variables -----------------------------------------------------------------------*/
+extern SPI_HandleTypeDef HSPI_IMU;
+extern uint8_t IMU_TX_BUFFER[IMU_MAX_TXBUF];
+extern uint8_t IMU_RX_BUFFER[IMU_MAX_RXBUF];
+
 /* Private function prototypes -------------------------------------------------------------*/
 /* Private functions -----------------------------------------------------------------------*/
 
 /**
   * @brief  LPS22_WriteReg
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @retval None
   */
 void LPS22_WriteReg( uint8_t writeAddr, uint8_t writeData )
 {
-  LPS22_CSB_L();
-  SPI_RW(LPS22_SPIx, writeAddr);
-  SPI_RW(LPS22_SPIx, writeData);
-  LPS22_CSB_H();
+//  IMU_TX_BUFFER[0] = writeAddr;
+//  IMU_TX_BUFFER[1] = writeData;
+
+  IMU_CSB_L();
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, 3, HAL_MAX_DELAY);
+  SPI_RW(&HSPI_IMU, writeAddr);
+  SPI_RW(&HSPI_IMU, writeData);
+  IMU_CSB_H();
 }
 
 /**
   * @brief  LPS22_WriteRegs
-  * @param  writeAddr: 
-  * @param  writeData: 
-  * @param  lens: 
-  * @retval None
   */
 void LPS22_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens )
 {
-  LPS22_CSB_L();
-  SPI_RW(LPS22_SPIx, writeAddr);
+//  uint8_t count = lens;
+//  uint8_t *ptr = &IMU_TX_BUFFER[1];
+
+//  IMU_TX_BUFFER[0] = writeAddr;
+//  while(count--) {
+//    *ptr++ = *writeData++;
+//  }
+//  IMU_CSB_L();
+//  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, lens + 1, HAL_MAX_DELAY);
+//  IMU_CSB_H();
+
+  IMU_CSB_L();
+  SPI_RW(&HSPI_IMU, writeAddr);
   for (uint8_t i = 0; i < lens; i++) {
-    SPI_RW(LPS22_SPIx, writeData[i]);
+    SPI_RW(&HSPI_IMU, writeData[i]);
   }
-  LPS22_CSB_H();
+  IMU_CSB_H();
 }
 
 /**
   * @brief  LPS22_ReadReg
-  * @param  readAddr: 
-  * @retval read data
   */
 uint8_t LPS22_ReadReg( uint8_t readAddr )
 {
-  uint8_t readData = 0;
+  IMU_TX_BUFFER[0] = 0x80 | readAddr;
+  IMU_TX_BUFFER[1] = 0x00;
 
-  LPS22_CSB_L();
-  SPI_RW(LPS22_SPIx, 0x80 | readAddr);
-  readData = SPI_RW(LPS22_SPIx, 0x00);
-  LPS22_CSB_H();
+  IMU_CSB_L();
+  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, 2, HAL_MAX_DELAY);
+  IMU_CSB_H();
 
-  return readData;
+  return IMU_RX_BUFFER[1];
 }
 
 /**
   * @brief  LPS22_ReadRegs
-  * @param  readAddr: 
-  * @param  readData: 
-  * @param  lens: 
-  * @retval None
   */
 void LPS22_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens )
 {
-  LPS22_CSB_L();
-  SPI_RW(LPS22_SPIx, 0x80 | readAddr);
-  for (uint8_t i = 0; i < lens; i++) {
-    readData[i] = SPI_RW(LPS22_SPIx, 0x00);
+  uint8_t count = lens;
+  uint8_t *ptrBuf = &IMU_TX_BUFFER[1];
+
+  IMU_TX_BUFFER[0] = 0x80 | readAddr;
+  while (count--) {
+    *ptrBuf++ = 0;
   }
-  LPS22_CSB_H();
+
+  IMU_CSB_L();
+  SPI_SendRecv(&HSPI_IMU, IMU_TX_BUFFER, IMU_RX_BUFFER, lens + 1, HAL_MAX_DELAY);
+  IMU_CSB_H();
+
+  ptrBuf = &IMU_RX_BUFFER[1];
+  while (lens--) {
+    *readData++ = *ptrBuf++;
+  }
 }
 
 /**
   * @brief  LPS22_Config
-  * @param  IMUx: 
-  * @retval SPIx_BASE
   */
-uint32_t LPS22_Config( void )
+void LPS22_Config( void )
 {
   GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* SPI Clk ******************************************************************/
-  LPS22_SPIx_CLK_ENABLE();
 
   /* SPI Pin ******************************************************************/
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull  = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 
-  GPIO_InitStruct.Pin   = LPS22_CSB_PIN;
-  HAL_GPIO_Init(LPS22_CSB_GPIO_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin   = IMU_CSB_PIN;
+  HAL_GPIO_Init(IMU_CSB_GPIO_PORT, &GPIO_InitStruct);
 
-  LPS22_CSB_H();    // LOW ENABLE
-
-  return ((uint32_t)LPS22_SPIx);
+  IMU_CSB_H();    // LOW ENABLE
 }
 
 /**
   * @brief  LPS22_Init
-  * @param  IMUx: 
-  * @retval state
   */
 int8_t LPS22_Init( LPS_ConfigTypeDef *LPSx )
 {
@@ -153,8 +147,6 @@ int8_t LPS22_Init( LPS_ConfigTypeDef *LPSx )
 
 /**
   * @brief  LPS22_DeviceCheck
-  * @param  None
-  * @retval state
   */
 int8_t LPS22_DeviceCheck( void )
 {

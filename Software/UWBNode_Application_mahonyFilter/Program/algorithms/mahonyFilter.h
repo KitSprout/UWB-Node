@@ -28,8 +28,8 @@
 
 /* Exported types --------------------------------------------------------------------------*/
 typedef struct {
-  Quaternion_t numQ;
-  EulerAngle_t angE;
+  quaternion_t numQ;
+  eulerAngle_t angE;
   float32_t sampleRate;
   IMU_DataTypeDef *imu;
 } __attribute__((aligned)) MahonyFilter_t;

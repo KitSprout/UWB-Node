@@ -8,7 +8,7 @@
   * 
   * @file    imu.h
   * @author  KitSprout
-  * @date    12-Nov-2016
+  * @date    12-Dec-2016
   * @brief   
   * 
   */
@@ -28,6 +28,15 @@
 #include "modules\lps22hb.h"
 
 /* Exported types --------------------------------------------------------------------------*/
+
+typedef struct {
+  SPI_HandleTypeDef *handle;
+  uint16_t txBufLens;
+  uint16_t rxBufLens;
+  uint8_t *pTxBuf;
+  uint8_t *pRxBuf;
+} __attribute__((aligned)) ImuHandle_st;
+
 typedef struct {
   float32_t gyrRaw[3];      /* x = raw[0], y = raw[1], z = raw[2] */
   float32_t accRaw[3];

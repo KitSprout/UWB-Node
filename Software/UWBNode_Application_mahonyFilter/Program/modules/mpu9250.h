@@ -259,20 +259,20 @@ typedef struct {
 #define MPU92_DEVICE_NUM 1
 
 /* Exported functions ----------------------------------------------------------------------*/  
-void     MPU92_WriteReg( uint8_t writeAddr, uint8_t writeData );
-void     MPU92_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens );
-uint8_t  MPU92_ReadReg( uint8_t readAddr );
-void     MPU92_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens );
-void     MPU92_Mag_WriteReg( uint8_t writeAddr, uint8_t writeData );
-void     MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens );
-uint8_t  MPU92_Mag_ReadReg( uint8_t readAddr );
-void     MPU92_Mag_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens );
+void      MPU92_WriteReg( uint8_t writeAddr, uint8_t writeData );
+void      MPU92_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens );
+uint8_t   MPU92_ReadReg( uint8_t readAddr );
+void      MPU92_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens );
+void      MPU92_Mag_WriteReg( uint8_t writeAddr, uint8_t writeData );
+void      MPU92_Mag_WriteRegs( uint8_t writeAddr, uint8_t *writeData, uint8_t lens );
+uint8_t   MPU92_Mag_ReadReg( uint8_t readAddr );
+void      MPU92_Mag_ReadRegs( uint8_t readAddr, uint8_t *readData, uint8_t lens );
 
-uint32_t MPU92_Config( void );
-int8_t   MPU92_Init( MPU_ConfigTypeDef *MPUx );
-int8_t   MPU92_DeviceCheck( void );
-void     MPU92_GetSensitivity( MPU_ConfigTypeDef *MPUx, float32_t *sensitivity );
-int8_t   MPU92_GetRawData( int16_t *data );
+void      MPU92_Config( void );
+int8_t    MPU92_Init( MPU_ConfigTypeDef *MPUx );
+int8_t    MPU92_DeviceCheck( void );
+void      MPU92_GetSensitivity( MPU_ConfigTypeDef *MPUx, float32_t *sensitivity );
+int8_t    MPU92_GetRawData( int16_t *data );
 
 #ifdef __cplusplus
 }
