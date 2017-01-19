@@ -21,8 +21,8 @@
  extern "C" {
 #endif
 
-#define __LPS22
-#define __USE_BAROMETER
+//#define __LPS22
+//#define __USE_BAROMETER
 
 /* Includes --------------------------------------------------------------------------------*/
 #include "stm32f4xx.h"

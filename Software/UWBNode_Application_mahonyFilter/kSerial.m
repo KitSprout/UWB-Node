@@ -189,10 +189,23 @@ methods
     end
 
     function freq = getFreq( s, index, length )
-        sec_s = s.dataBuffer(index(1), end - length + 1) * 60 + s.dataBuffer(index(2), end - length + 1) + s.dataBuffer(index(3), end - length + 1);
-        sec_e = s.dataBuffer(index(1), end) * 60              + s.dataBuffer(index(2), end)              + s.dataBuffer(index(3), end);
-        freq = length / (sec_e - sec_s);
+        sec_s = s.dataBuffer(index(2), end - length) + s.dataBuffer(index(1), end - length);
+        sec_e = s.dataBuffer(index(2), end) + s.dataBuffer(index(1), end);
+        freq = fix(length / (sec_e - sec_s) * 100  + 1e-5) / 100;
     end
+
+    function save2mat( s, name, index )
+        fprintf('\nSAVE... ');
+        date = fix(clock);
+        tag  = sprintf('_%04i%02i%02i_%02i%02i%02i.mat', date);
+        fileName = strcat(name, tag);
+        dataLens = s.packet.packetCount;
+        data     = s.dataBuffer(:, end - dataLens + 1 : end);
+        dataIndex = index;
+        save(fileName, 'data', 'dataLens', 'dataIndex');
+        fprintf('OK\n');
+    end
+
 end
 
 methods (Access = private)

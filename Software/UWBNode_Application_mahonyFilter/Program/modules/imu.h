@@ -75,7 +75,7 @@ typedef struct {
 } __attribute__((aligned(4))) IMU_DataTypeDef;
 
 typedef struct {
-  IMU_DataTypeDef *Data;
+  IMU_DataTypeDef *data;
 
 #if defined(__MPU92)
   MPU_ConfigTypeDef InitMPU;

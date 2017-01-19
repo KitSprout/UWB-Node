@@ -6,38 +6,39 @@
   *  /_/|_|/_/ \__//___// .__//_/   \___/\_,_/ \__/  
   *                    /_/   github.com/KitSprout    
   * 
-  * @file    mahonyFilter.h
+  * @file    stm32f4_tim.h
   * @author  KitSprout
-  * @date    12-Oct-2016
+  * @date    16-Nov-2016
   * @brief   
   * 
   */
 
 /* Define to prevent recursive inclusion ---------------------------------------------------*/
-#ifndef __MAHONYFILTER_H
-#define __MAHONYFILTER_H
+#ifndef __STM32F4_TIM_H
+#define __STM32F4_TIM_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
 /* Includes --------------------------------------------------------------------------------*/
-#include "stm32f4xx.h"
-#include "modules\imu.h"
-#include "algorithms\quaternion.h"
+#include "stm32f4_system.h"
 
 /* Exported types --------------------------------------------------------------------------*/
 typedef struct {
-  quaternion_t numQ;
-  eulerAngle_t angE;
-  float32_t sampleTime;
-  IMU_DataTypeDef *imu;
-} __attribute__((aligned)) MahonyFilter_t;
+  TIM_HandleTypeDef *handle;
+  pFunc EvenCallback;
+} TimHandle_st;
 
 /* Exported constants ----------------------------------------------------------------------*/
-/* Exported functions ----------------------------------------------------------------------*/  
-void MahonyFilter_Init( MahonyFilter_t *mf, IMU_DataTypeDef *imu, float32_t sampleTime );
-void MahonyFilter_Update( MahonyFilter_t *mf );
+#define TIMx_CLOCK( __PRES, __PERIOD )  (SystemCoreClock / (__PRES * __PERIOD))
+
+/* Exported functions ----------------------------------------------------------------------*/
+void Timer2_Config( uint32_t prescaler, uint32_t period );
+
+void Timer2_Cmd( uint8_t cmd );
+
+extern TimHandle_st hTimer2;
 
 #ifdef __cplusplus
 }

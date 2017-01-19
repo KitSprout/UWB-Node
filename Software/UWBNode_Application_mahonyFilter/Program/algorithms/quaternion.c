@@ -93,9 +93,9 @@ __INLINE void Quaternion_ToNumQ( quaternion_t *pNumQ, const eulerAngle_t *pAngE 
   */
 __INLINE void Quaternion_ToAngE( eulerAngle_t *pAngE, const quaternion_t *pNumQ )
 {
-  pAngE->pitch = toDeg(-asinf(pNumQ->rMat[0][2]));
-  pAngE->roll  = toDeg(atan2f(pNumQ->rMat[1][2], pNumQ->rMat[2][2]));
-  pAngE->yaw   = toDeg(atan2f(pNumQ->rMat[0][1], pNumQ->rMat[0][0]));
+  pAngE->pitch = toDeg(asinf(pNumQ->rMat[0][2]));
+  pAngE->roll  = toDeg(atan2f(-pNumQ->rMat[1][2], pNumQ->rMat[2][2]));
+  pAngE->yaw   = toDeg(atan2f(-pNumQ->rMat[0][1], pNumQ->rMat[0][0]));
 }
 
 /**
@@ -158,13 +158,13 @@ __INLINE void Quaternion_Sub( quaternion_t *pNumQ, const quaternion_t *pNumA, co
 }
 
 /**
-  * @brief  Quaternion_Multiply
+  * @brief  Quaternion_Mult
   * @param  pNumQ: 
   * @param  pNumA: 
   * @param  pNumB: 
   * @retval None
   */
-__INLINE void Quaternion_Multiply( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB )
+__INLINE void Quaternion_Mult( quaternion_t *pNumQ, const quaternion_t *pNumA, const quaternion_t *pNumB )
 {
   if (pNumQ == pNumA) {
     quaternion_t tmpQ;
@@ -179,38 +179,38 @@ __INLINE void Quaternion_Multiply( quaternion_t *pNumQ, const quaternion_t *pNum
   }
   else {
     pNumQ->q0 = pNumA->q0 * pNumB->q0 - pNumA->q1 * pNumB->q1 - pNumA->q2 * pNumB->q2 - pNumA->q3 * pNumB->q3;
-    pNumQ->q1 = pNumA->q1 * pNumB->q0 + pNumA->q0 * pNumB->q1 - pNumA->q3 * pNumB->q2 + pNumA->q2 * pNumB->q3;
-    pNumQ->q2 = pNumA->q2 * pNumB->q0 + pNumA->q3 * pNumB->q1 + pNumA->q0 * pNumB->q2 - pNumA->q1 * pNumB->q3;
-    pNumQ->q3 = pNumA->q3 * pNumB->q0 - pNumA->q2 * pNumB->q1 + pNumA->q1 * pNumB->q2 + pNumA->q0 * pNumB->q3;
+    pNumQ->q1 = pNumA->q1 * pNumB->q0 + pNumA->q0 * pNumB->q1 + pNumA->q3 * pNumB->q2 - pNumA->q2 * pNumB->q3;
+    pNumQ->q2 = pNumA->q2 * pNumB->q0 - pNumA->q3 * pNumB->q1 + pNumA->q0 * pNumB->q2 + pNumA->q1 * pNumB->q3;
+    pNumQ->q3 = pNumA->q3 * pNumB->q0 + pNumA->q2 * pNumB->q1 - pNumA->q1 * pNumB->q2 + pNumA->q0 * pNumB->q3;
   }
 }
 
 /**
-  * @brief  Quaternion_MultiplyVector
+  * @brief  Quaternion_MultVect
   * @param  pNumQ: 
   * @param  pNumA: 
   * @param  pVect: 
   * @retval None
   */
-__INLINE void Quaternion_MultiplyVector( quaternion_t *pNumQ, const quaternion_t *pNumA, const float32_t *pVect )
+__INLINE void Quaternion_MultVect( quaternion_t *pNumQ, const quaternion_t *pNumA, const float32_t *pVect )
 {
-  if (pNumQ == pNumA) {
-    quaternion_t tmpQ;
-    tmpQ.q0 = pNumA->q0;
-    tmpQ.q1 = pNumA->q1;
-    tmpQ.q2 = pNumA->q2;
-    tmpQ.q3 = pNumA->q3;
-    pNumQ->q0 = -tmpQ.q1 * pVect[0] - tmpQ.q2 * pVect[1] - tmpQ.q3 * pVect[2];
-    pNumQ->q1 =  tmpQ.q0 * pVect[0] - tmpQ.q3 * pVect[1] + tmpQ.q2 * pVect[2];
-    pNumQ->q2 =  tmpQ.q3 * pVect[0] + tmpQ.q0 * pVect[1] - tmpQ.q1 * pVect[2];
-    pNumQ->q3 = -tmpQ.q2 * pVect[0] + tmpQ.q1 * pVect[1] + tmpQ.q0 * pVect[2];
-  }
-  else {
-    pNumQ->q0 = -pNumA->q1 * pVect[0] - pNumA->q2 * pVect[1] - pNumA->q3 * pVect[2];
-    pNumQ->q1 =  pNumA->q0 * pVect[0] - pNumA->q3 * pVect[1] + pNumA->q2 * pVect[2];
-    pNumQ->q2 =  pNumA->q3 * pVect[0] + pNumA->q0 * pVect[1] - pNumA->q1 * pVect[2];
-    pNumQ->q3 = -pNumA->q2 * pVect[0] + pNumA->q1 * pVect[1] + pNumA->q0 * pVect[2];
-  }
+//  if (pNumQ == pNumA) {
+//    quaternion_t tmpQ;
+//    tmpQ.q0 = pNumA->q0;
+//    tmpQ.q1 = pNumA->q1;
+//    tmpQ.q2 = pNumA->q2;
+//    tmpQ.q3 = pNumA->q3;
+//    pNumQ->q0 = -tmpQ.q1 * pVect[0] - tmpQ.q2 * pVect[1] - tmpQ.q3 * pVect[2];
+//    pNumQ->q1 =  tmpQ.q0 * pVect[0] - tmpQ.q3 * pVect[1] + tmpQ.q2 * pVect[2];
+//    pNumQ->q2 =  tmpQ.q3 * pVect[0] + tmpQ.q0 * pVect[1] - tmpQ.q1 * pVect[2];
+//    pNumQ->q3 = -tmpQ.q2 * pVect[0] + tmpQ.q1 * pVect[1] + tmpQ.q0 * pVect[2];
+//  }
+//  else {
+//    pNumQ->q0 = -pNumA->q1 * pVect[0] - pNumA->q2 * pVect[1] - pNumA->q3 * pVect[2];
+//    pNumQ->q1 =  pNumA->q0 * pVect[0] - pNumA->q3 * pVect[1] + pNumA->q2 * pVect[2];
+//    pNumQ->q2 =  pNumA->q3 * pVect[0] + pNumA->q0 * pVect[1] - pNumA->q1 * pVect[2];
+//    pNumQ->q3 = -pNumA->q2 * pVect[0] + pNumA->q1 * pVect[1] + pNumA->q0 * pVect[2];
+//  }
 }
 
 /**

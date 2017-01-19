@@ -23,8 +23,14 @@
 
 /* Private typedef -------------------------------------------------------------------------*/
 /* Private define --------------------------------------------------------------------------*/
-#define MF_KP 0.4f
-//#define MF_KI 0.001f
+#define MF_A_THR  0.4f
+#define MF_M_THR  0.1f
+
+#define MF_KPA 0.4f
+//#define MF_KIA 0.001f
+
+#define MF_KPM 0.01f
+//#define MF_KIM 0.001f
 
 //#define MAHONY_FILTER_9DOF
 
@@ -39,7 +45,7 @@
   * @param  imu: 
   * @retval None
   */
-void MahonyFilter_Init( MahonyFilter_t *mf, IMU_DataTypeDef *imu, float32_t sampleRate )
+void MahonyFilter_Init( MahonyFilter_t *mf, IMU_DataTypeDef *imu, float32_t sampleTime )
 {
   mf->angE.pitch = 0.0f;
   mf->angE.roll  = 0.0f;
@@ -49,7 +55,7 @@ void MahonyFilter_Init( MahonyFilter_t *mf, IMU_DataTypeDef *imu, float32_t samp
 
   mf->imu = imu;
 
-  mf->sampleRate = sampleRate;
+  mf->sampleTime = sampleTime;
 }
 
 /**
@@ -59,17 +65,20 @@ void MahonyFilter_Init( MahonyFilter_t *mf, IMU_DataTypeDef *imu, float32_t samp
   */
 void MahonyFilter_Update( MahonyFilter_t *mf )
 {
+  float32_t err[3];
+
   float32_t gVect[3];
   float32_t gyr[3], acc[3];
+#if defined(MF_KIA)
+  static float32_t errIntA[3] = {0};
+#endif
 
 #if defined(MAHONY_FILTER_9DOF)
   float32_t hVect[3], wVect[3];
   float32_t mag[3];
+#if defined(MF_KIM)
+  static float32_t errIntM[3] = {0};
 #endif
-
-  float32_t err[3];
-#if defined(MF_KI)
-  static float32_t errInt[3] = {0};
 #endif
 
   gyr[0] = toRad(mf->imu->gyrData[0]);
@@ -80,30 +89,47 @@ void MahonyFilter_Update( MahonyFilter_t *mf )
   acc[2] = mf->imu->accData[2];
 
   /* Normalise accelerometer measurement */
-  const float32_t normAcc = invSqrtf(acc[0] * acc[0] + acc[1] * acc[1] + acc[2] * acc[2]);
-  acc[0] *= normAcc;
-  acc[1] *= normAcc;
-  acc[2] *= normAcc;
+  const float32_t normAcc = sqrtf(acc[0] * acc[0] + acc[1] * acc[1] + acc[2] * acc[2]);
+  if ((normAcc < (mf->imu->accStrength * (1.0f + MF_A_THR))) && (normAcc > (mf->imu->accStrength * (1.0f - MF_A_THR)))) {
+    acc[0] /= normAcc;
+    acc[1] /= normAcc;
+    acc[2] /= normAcc;
 
-  /* Estimated direction of gravity */
-  gVect[0] = mf->numQ.rMat[0][2];
-  gVect[1] = mf->numQ.rMat[1][2];
-  gVect[2] = mf->numQ.rMat[2][2];
+    /* Estimated direction of gravity */
+    gVect[0] = mf->numQ.rMat[0][2];
+    gVect[1] = mf->numQ.rMat[1][2];
+    gVect[2] = mf->numQ.rMat[2][2];
 
-  err[0] = acc[1] * gVect[2] - acc[2] * gVect[1];
-  err[1] = acc[2] * gVect[0] - acc[0] * gVect[2];
-  err[2] = acc[0] * gVect[1] - acc[1] * gVect[0];
+    err[0] = acc[1] * gVect[2] - acc[2] * gVect[1];
+    err[1] = acc[2] * gVect[0] - acc[0] * gVect[2];
+    err[2] = acc[0] * gVect[1] - acc[1] * gVect[0];
+
+#if defined(MF_KIA)
+    /* Compute and apply integral feedback */
+    errIntA[0] += MF_KIA * err[0];
+    errIntA[1] += MF_KIA * err[1];
+    errIntA[2] += MF_KIA * err[2];
+
+    /* Apply proportional feedback */
+    gyr[0] += MF_KPA * err[0] + errIntA[0];
+    gyr[1] += MF_KPA * err[1] + errIntA[1];
+    gyr[2] += MF_KPA * err[2] + errIntA[2];
+
+#else
+    gyr[0] += MF_KPA * err[0];
+    gyr[1] += MF_KPA * err[1];
+    gyr[2] += MF_KPA * err[2];
+
+#endif
+  }
 
 #if defined(MAHONY_FILTER_9DOF)
   mag[0] = mf->imu->magData[0];
   mag[1] = mf->imu->magData[1];
   mag[2] = mf->imu->magData[2];
-
-//  const float32_t normMag = invSqrtf(mag[0] * mag[0] + mag[1] * mag[1] + mag[2] * mag[2]);
-//  if ((normMag < fusionAhrs->minMagneticFieldSquared) ||
-//      (normMag > fusionAhrs->maxMagneticFieldSquared)) {
-//    break;
-//  }
+  const float32_t normMag = sqrtf(mag[0] * mag[0] + mag[1] * mag[1] + mag[2] * mag[2]);
+  if ((normMag < (mf->imu->magStrength * (1.0f + MF_M_THR))) && (normMag > (mf->imu->magStrength * (1.0f - MF_M_THR)))) {
+  }
 
   /* Reference direction of Earth's magnetic field */
   wVect[0] = acc[1] * mag[2] - acc[2] * mag[1];
@@ -112,8 +138,8 @@ void MahonyFilter_Update( MahonyFilter_t *mf )
 
   /* Normalise magnetometer measurement */
   const float32_t normVect = invSqrtf(wVect[0] * wVect[0] + wVect[1] * wVect[1] + wVect[2] * wVect[2]);
-  wVect[2] *= normVect;
-  wVect[2] *= normVect;
+  wVect[0] *= normVect;
+  wVect[1] *= normVect;
   wVect[2] *= normVect;
 
   /* Estimated direction of Earth's magnetic field  */
@@ -122,41 +148,35 @@ void MahonyFilter_Update( MahonyFilter_t *mf )
   hVect[2] = mf->numQ.rMat[2][1];
 
   /* Error is sum of cross product between estimated direction and measured direction of field vectors */
-  err[0] += wVect[1] * hVect[2] - wVect[2] * hVect[1];
-  err[1] += wVect[2] * hVect[0] - wVect[0] * hVect[2];
-  err[2] += wVect[0] * hVect[1] - wVect[1] * hVect[0];
+  err[0] = wVect[1] * hVect[2] - wVect[2] * hVect[1];
+  err[1] = wVect[2] * hVect[0] - wVect[0] * hVect[2];
+  err[2] = wVect[0] * hVect[1] - wVect[1] * hVect[0];
 
-#endif
+#if defined(MF_KIA)
+    /* Compute and apply integral feedback */
+    errIntA[0] += MF_KIM * err[0];
+    errIntA[1] += MF_KIM * err[1];
+    errIntA[2] += MF_KIM * err[2];
 
-#if defined(MF_KI)
-  /* Compute and apply integral feedback */
-  errInt[0] += (SAMPLE_RATE * MF_KI) * err[0];
-  errInt[1] += (SAMPLE_RATE * MF_KI) * err[1];
-  errInt[2] += (SAMPLE_RATE * MF_KI) * err[2];
-
-  /* Apply proportional feedback */
-  gyr[0] += MF_KP * err[0] + errInt[0];
-  gyr[1] += MF_KP * err[1] + errInt[1];
-  gyr[2] += MF_KP * err[2] + errInt[2];
+    /* Apply proportional feedback */
+    gyr[0] += MF_KPM * err[0] + errIntM[0];
+    gyr[1] += MF_KPM * err[1] + errIntM[1];
+    gyr[2] += MF_KPM * err[2] + errIntM[2];
 
 #else
-  gyr[0] += MF_KP * err[0];
-  gyr[1] += MF_KP * err[1];
-  gyr[2] += MF_KP * err[2];
+    gyr[0] += MF_KPM * err[0];
+    gyr[1] += MF_KPM * err[1];
+    gyr[2] += MF_KPM * err[2];
+
+#endif
 
 #endif
 
   /* Integrate rate of change of quaternion */
-//  Quaternion_Conjugate(&mf->numQ, &mf->numQ);
-  Quaternion_RungeKutta(&mf->numQ, gyr, mf->sampleRate * 0.5f);
+  Quaternion_RungeKutta(&mf->numQ, gyr, mf->sampleTime * 0.5f);
   Quaternion_Normalize(&mf->numQ, &mf->numQ);
   Quaternion_UpdateRotMatrix(&mf->numQ);
-  Quaternion_ToAngE(&mf->angE, &mf->numQ);
-
-//  // Get Euler Angle */
-//  mf->angE.pitch = -toDeg(mf->angE.pitch);
-//  mf->angE.roll  = toDeg(mf->angE.roll);
-//  mf->angE.yaw   = -toDeg(mf->angE.yaw);
+//  Quaternion_ToAngE(&mf->angE, &mf->numQ);
 }
 
 /*************************************** END OF FILE ****************************************/

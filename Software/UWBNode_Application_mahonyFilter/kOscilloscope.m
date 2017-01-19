@@ -1,4 +1,4 @@
-classdef kSerial_Oscilloscope < handle
+classdef kOscilloscope < handle
 
 properties (SetAccess = public)
 	curveChannel;
@@ -15,7 +15,7 @@ end
 
 methods
 
-    function osc = kSerial_Oscilloscope( ~ )
+    function osc = kOscilloscope( ~ )
         osc.window.width =  800;
         osc.window.displayPos = osc.window.width * (-0.9);
         osc.window.xmax  = osc.window.displayPos + osc.window.width;

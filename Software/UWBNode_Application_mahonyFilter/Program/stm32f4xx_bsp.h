@@ -6,38 +6,31 @@
   *  /_/|_|/_/ \__//___// .__//_/   \___/\_,_/ \__/  
   *                    /_/   github.com/KitSprout    
   * 
-  * @file    mahonyFilter.h
+  * @file    stm32f4xx_bsp.h
   * @author  KitSprout
-  * @date    12-Oct-2016
+  * @date    19-Nov-2016
   * @brief   
   * 
   */
 
 /* Define to prevent recursive inclusion ---------------------------------------------------*/
-#ifndef __MAHONYFILTER_H
-#define __MAHONYFILTER_H
+#ifndef __STM32F4XX_BSP_H
+#define __STM32F4XX_BSP_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
 /* Includes --------------------------------------------------------------------------------*/
-#include "stm32f4xx.h"
-#include "modules\imu.h"
-#include "algorithms\quaternion.h"
+#include "drivers\stm32f4_system.h"
 
 /* Exported types --------------------------------------------------------------------------*/
-typedef struct {
-  quaternion_t numQ;
-  eulerAngle_t angE;
-  float32_t sampleTime;
-  IMU_DataTypeDef *imu;
-} __attribute__((aligned)) MahonyFilter_t;
-
 /* Exported constants ----------------------------------------------------------------------*/
-/* Exported functions ----------------------------------------------------------------------*/  
-void MahonyFilter_Init( MahonyFilter_t *mf, IMU_DataTypeDef *imu, float32_t sampleTime );
-void MahonyFilter_Update( MahonyFilter_t *mf );
+/* Exported functions ----------------------------------------------------------------------*/
+void BSP_GPIO_Config( void );
+void BSP_TIMER2_Config( pFunc pTIMx, uint16_t freq );
+void BSP_UART_Config( pFunc txEven, pFunc rxEven );
+void BSP_IMU_Config( void );
 
 #ifdef __cplusplus
 }
