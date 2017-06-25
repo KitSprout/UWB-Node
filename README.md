@@ -1,6 +1,6 @@
 UWB-Node
 ========
-[![GitHub version](https://img.shields.io/badge/version-v1.2-brightgreen.svg)](https://github.com/KitSprout/UWB-Node)
+[![GitHub version](https://img.shields.io/badge/version-v1.6-brightgreen.svg)](https://github.com/KitSprout/UWB-Node)
 [![GitHub old version](https://img.shields.io/badge/old%20version-%20v1.2-green.svg)](https://github.com/KitSprout/UWB-Node/releases/tag/v1.2)
 [![GitHub license](https://img.shields.io/badge/license-%20MIT%20%2F%20CC%20BY--SA%204.0-blue.svg)](https://github.com/KitSprout/UWB-Node/blob/master/LICENSE)
 [![GitHub pcb library](https://img.shields.io/badge/pcb%20library-%20v3.0-yellow.svg)](https://github.com/KitSprout/AltiumDesigner_PcbLibrary/releases/tag/v3.0)
